@@ -187,9 +187,26 @@ nav.topnav.scrolled{box-shadow:var(--clay-hover)}
 .hero h1 .line{display:block}
 .hero h1 .char{display:inline-block;will-change:transform,opacity,filter}
 .hero h1 .accent{
-  background:linear-gradient(120deg,#10b981,#38bdf8,#a855f7);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  background-size:220% auto;animation:shimmer 5s linear infinite;
+  background: none; /* Parent se gradient hata diya */
+}
+.hero h1 .accent .char {
+  background: linear-gradient(120deg, #10b981, #38bdf8, #a855f7);
+  background-size: 220% auto;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  animation: shimmer 5s linear infinite;
+  display: inline-block;
+}
+/* Fix for invisible hero text */
+.hero h1 .line.accent .char {
+  background: linear-gradient(120deg, #10b981, #38bdf8, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 220% auto;
+  animation: shimmer 5s linear infinite;
 }
 @keyframes shimmer{to{background-position:220% center}}
 .hero p{
@@ -707,6 +724,32 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
 .toast.ok{background:linear-gradient(145deg,#10b981,#047857)}
 .toast.err{background:linear-gradient(145deg,#dc2626,#991b1b)}
 @media(max-width:640px){.hist-panel{width:calc(100vw - 32px);right:16px;top:70px;bottom:16px}#installBtn{bottom:76px;right:14px;padding:12px 18px;font-size:.82rem}}
+/* ===== MOBILE PERFORMANCE FIX ===== */
+@media (max-width: 768px) {
+  /* 1. Shadows ko halka karo */
+  :root {
+    --clay: 4px 4px 10px rgba(174,190,205,.3), -4px -4px 10px rgba(255,255,255,.8), inset 1px 1px 2px rgba(255,255,255,.5);
+    --clay-inset: inset 3px 3px 8px rgba(174,190,205,.3), inset -3px -3px 8px rgba(255,255,255,.9);
+  }
+  
+  /* 2. Heavy background blobs hide karo */
+  .orb-bg .o { display: none !important; }
+  
+  /* 3. Nav aur Modal se backdrop blur hatao (ye mobile pe bahut lag karta hai) */
+  .topnav, .modal, .overlay, .hist-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: linear-gradient(145deg, #f5f8fc, #e6ecf4) !important;
+  }
+  
+  /* 4. Cursor glow hide */
+  #cg { display: none !important; }
+  
+  /* 5. Hover 3D tilt band karo (touch pe zaroorat nahi) */
+  .card:hover, .el:hover, .btn-clay:hover, .chip:hover {
+    transform: none !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -741,7 +784,7 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
   </div>
   <h1 id="heroH1">
     <span class="line">Pharmacy ka</span>
-    <span class="line accent">Poora Toolkit</span>
+    <span class="line accent">Pura Toolkit</span>
   </h1>
   <p>118 elements ka interactive periodic table, molecular weight, molarity, molality, normality, alligation, dose calculation, buffer pH, kinetics — sab ek hi jagah. Bilkul free, bilkul offline.</p>
   <div class="hero-chips">
@@ -2785,9 +2828,27 @@ function setupAutoUpdate() {
     });
   }
 }
+/* ===== MOBILE LAG FIX ===== */
+function optimizeForMobile() {
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return;
+
+  // 1. Scroll parallax blur effect band karo (Ye sabse zyada lag karta hai)
+  window.removeEventListener('scroll', window._parallaxScroll);
+  const h1 = document.querySelector('.hero h1');
+  if(h1) { h1.style.transform = 'none'; h1.style.filter = 'none'; h1.style.opacity = '1'; }
+  
+  // 2. Particle background (Orbs) ko remove karo
+  const orbs = document.querySelector('.orb-bg');
+  if(orbs) orbs.remove();
+  
+  // 3. Heavy Mouse tracking band karo
+  window.removeEventListener('pointermove', window._mouseTracker);
+}
 /* ===== INIT ===== */
 function init(){
   injectButtons();
+  optimizeForMobile();
   setupAutoUpdate();
   renderHistory();
   document.getElementById('histClear')?.addEventListener('click',clearHistory);
