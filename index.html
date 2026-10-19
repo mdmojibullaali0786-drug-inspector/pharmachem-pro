@@ -1,0 +1,2811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaChem Pro — Clay Edition</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#10b981">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --txt:#0f172a;
+  --muted:#64748b;
+  --mint:#6ee7b7; --mint-txt:#059669;
+  --sky:#7dd3fc; --sky-txt:#0284c7;
+  --lav:#c4b5fd; --lav-txt:#7c3aed;
+  --peach:#fdba74; --peach-txt:#ea580c;
+  --pink:#f9a8d4; --pink-txt:#db2777;
+  --amber:#fde68a; --amber-txt:#d97706;
+  --rose:#fda4af; --rose-txt:#be123c;
+
+  /* element category colors (pastel clay) */
+  --c-am:#fda4af; --c-ae:#fdba74; --c-tm:#7dd3fc;
+  --c-ptm:#67e8f9; --c-ml:#c4b5fd; --c-nm:#6ee7b7;
+  --c-hl:#fde047; --c-ng:#f9a8d4; --c-ln:#d8b4fe;
+  --c-an:#fb7185;
+
+  --clay:
+    6px 6px 18px rgba(174,190,205,.42),
+    -6px -6px 18px rgba(255,255,255,.95),
+    inset 1px 1px 3px rgba(255,255,255,.85),
+    inset -1px -1px 3px rgba(174,190,205,.18);
+  --clay-hover:
+    14px 14px 32px rgba(174,190,205,.55),
+    -14px -14px 32px rgba(255,255,255,1),
+    inset 2px 2px 5px rgba(255,255,255,.9),
+    inset -2px -2px 5px rgba(174,190,205,.22);
+  --clay-inset:
+    inset 5px 5px 14px rgba(174,190,205,.5),
+    inset -5px -5px 14px rgba(255,255,255,1);
+  --clay-btn:
+    4px 4px 10px rgba(174,190,205,.4),
+    -3px -3px 10px rgba(255,255,255,.95),
+    inset 1px 1px 2px rgba(255,255,255,.85),
+    inset -1px -1px 2px rgba(174,190,205,.15);
+  --clay-btn-pressed:
+    inset 4px 4px 10px rgba(174,190,205,.45),
+    inset -4px -4px 10px rgba(255,255,255,.85);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Outfit',system-ui,-apple-system,sans-serif;
+  color:var(--txt);
+  background:
+    radial-gradient(ellipse 60% 50% at 8% 0%, #dbeafe 0%, transparent 55%),
+    radial-gradient(ellipse 55% 50% at 95% 5%, #f3e8ff 0%, transparent 55%),
+    radial-gradient(ellipse 55% 50% at 5% 100%, #d1fae5 0%, transparent 55%),
+    radial-gradient(ellipse 55% 50% at 98% 98%, #fef3c7 0%, transparent 55%),
+    linear-gradient(180deg,#eef2f8,#e5ebf3);
+  background-attachment:fixed;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* FLOAT ORBS BG */
+.orb-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb-bg .o{
+  position:absolute;border-radius:50%;
+  box-shadow:
+    20px 20px 40px rgba(174,190,205,.4),
+    -20px -20px 40px rgba(255,255,255,.9),
+    inset 3px 3px 6px rgba(255,255,255,.8),
+    inset -3px -3px 6px rgba(174,190,205,.2);
+  animation:float 20s ease-in-out infinite;opacity:.55;
+}
+.orb-bg .o1{width:180px;height:180px;background:linear-gradient(145deg,#a7f3d0,#6ee7b7);top:8%;left:4%;animation-delay:0s}
+.orb-bg .o2{width:140px;height:140px;background:linear-gradient(145deg,#ddd6fe,#c4b5fd);top:22%;right:6%;animation-delay:-5s}
+.orb-bg .o3{width:200px;height:200px;background:linear-gradient(145deg,#bae6fd,#7dd3fc);bottom:15%;left:8%;animation-delay:-10s}
+.orb-bg .o4{width:160px;height:160px;background:linear-gradient(145deg,#fed7aa,#fdba74);bottom:8%;right:10%;animation-delay:-15s}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}
+  33%{transform:translate(30px,20px) scale(1.06) rotate(8deg)}
+  66%{transform:translate(-20px,-15px) scale(.94) rotate(-8deg)}
+}
+@media(max-width:768px){.orb-bg .o{opacity:.35;filter:blur(2px)}}
+
+h1,h2,h3,.display{font-family:'Space Grotesk','Outfit',sans-serif;letter-spacing:-.03em;line-height:1.05}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:#e5ebf3}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:3px solid #e5ebf3}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ===== CLAY BASE ===== */
+.clay{background:linear-gradient(145deg,#f5f8fc,#e6ecf4);border-radius:28px;box-shadow:var(--clay)}
+.clay-inset{background:linear-gradient(145deg,#e6ecf4,#f5f8fc);border-radius:20px;box-shadow:var(--clay-inset)}
+
+/* ===== NAV ===== */
+nav.topnav{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;
+  width:94%;max-width:1200px;padding:10px 16px;
+  display:flex;align-items:center;gap:14px;
+  border-radius:22px;
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay);
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+}
+nav.topnav.scrolled{box-shadow:var(--clay-hover)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:.95rem}
+.logo-orb{
+  width:34px;height:34px;border-radius:50%;flex:none;position:relative;
+  background:linear-gradient(135deg,#6ee7b7,#7dd3fc);
+  box-shadow:
+    3px 3px 8px rgba(52,211,153,.4),
+    -3px -3px 8px rgba(255,255,255,.9),
+    inset 1px 1px 3px rgba(255,255,255,.8);
+  animation:floaty 3s ease-in-out infinite;
+}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-4px) rotate(6deg)}}
+.logo-orb::after{
+  content:'';position:absolute;inset:10px;border-radius:50%;
+  background:linear-gradient(135deg,#34d399,#38bdf8);
+  box-shadow:inset -1px -1px 2px rgba(4,120,87,.4);
+}
+.logo-text{color:#0f172a}
+.logo-text span{color:var(--mint-txt)}
+.nav-links{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:700;
+  padding:8px 14px;border-radius:12px;transition:.25s;
+}
+.nav-links a:hover{
+  color:#0f172a;
+  background:linear-gradient(145deg,#e6ecf4,#f5f8fc);
+  box-shadow:var(--clay-btn);
+}
+.credit-chip{
+  font-size:.72rem;padding:8px 14px;border-radius:14px;font-weight:800;
+  background:linear-gradient(145deg,#ecfdf5,#d1fae5);
+  color:var(--mint-txt);white-space:nowrap;
+  box-shadow:
+    2px 2px 6px rgba(52,211,153,.3),
+    -2px -2px 6px rgba(255,255,255,.9),
+    inset 1px 1px 2px rgba(255,255,255,.8);
+}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative;z-index:1;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:130px 20px 60px;text-align:center;overflow:hidden;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:100px;font-size:.76rem;font-weight:800;
+  color:var(--mint-txt);margin-bottom:28px;
+  background:linear-gradient(145deg,#ecfdf5,#d1fae5);
+  box-shadow:
+    4px 4px 12px rgba(52,211,153,.3),
+    -4px -4px 12px rgba(255,255,255,.9),
+    inset 1px 1px 3px rgba(255,255,255,.8);
+}
+.hero-badge .dot{
+  width:8px;height:8px;border-radius:50%;background:#10b981;
+  box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}
+  70%{box-shadow:0 0 0 12px rgba(16,185,129,0)}
+  100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}
+}
+.hero h1{
+  font-size:clamp(2.4rem,7vw,5.5rem);
+  font-weight:900;letter-spacing:-.045em;
+  max-width:1100px;line-height:1.02;
+  color:#0f172a;
+}
+.hero h1 .line{display:block}
+.hero h1 .char{display:inline-block;will-change:transform,opacity,filter}
+.hero h1 .accent{
+  background:linear-gradient(120deg,#10b981,#38bdf8,#a855f7);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:220% auto;animation:shimmer 5s linear infinite;
+}
+@keyframes shimmer{to{background-position:220% center}}
+.hero p{
+  color:var(--muted);max-width:680px;margin:26px auto 0;
+  font-size:clamp(.95rem,1.6vw,1.08rem);line-height:1.7;font-weight:500;
+}
+.hero-chips{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.chip{
+  padding:12px 20px;border-radius:18px;font-size:.82rem;font-weight:700;color:var(--txt);
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay);
+  display:flex;align-items:center;gap:8px;
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+}
+.chip:hover{transform:translateY(-4px);box-shadow:var(--clay-hover)}
+.chip b{color:var(--mint-txt);font-size:1.05rem;font-weight:900}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:38px}
+
+/* ===== CLAY BUTTON ===== */
+.btn-clay{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:15px 28px;border-radius:16px;font-weight:700;font-size:.94rem;
+  text-decoration:none;border:none;cursor:pointer;font-family:inherit;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.btn-clay.primary{
+  color:#fff;
+  background:linear-gradient(135deg,#34d399,#10b981);
+  box-shadow:
+    6px 6px 16px rgba(16,185,129,.35),
+    -4px -4px 14px rgba(255,255,255,.9),
+    inset 2px 2px 4px rgba(255,255,255,.55),
+    inset -2px -2px 4px rgba(4,120,87,.25);
+}
+.btn-clay.primary:hover{transform:translateY(-3px)}
+.btn-clay.primary:active{transform:translateY(1px) scale(.98);box-shadow:
+  inset 5px 5px 12px rgba(4,120,87,.35),
+  inset -5px -5px 12px rgba(255,255,255,.4)}
+.btn-clay.ghost{
+  color:var(--txt);
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay);
+}
+.btn-clay.ghost:hover{transform:translateY(-3px)}
+.btn-clay.ghost:active{transform:translateY(1px) scale(.98);box-shadow:var(--clay-inset)}
+
+.scroll-hint{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;letter-spacing:.3em;color:var(--muted);font-weight:800;
+  animation:bounceSoft 2.2s ease-in-out infinite;
+}
+@keyframes bounceSoft{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,10px)}}
+
+/* ===== MARQUEE ===== */
+.marquee-wrap{
+  position:relative;z-index:1;padding:24px 0;overflow:hidden;
+  mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
+}
+.marquee-track{display:flex;gap:14px;width:max-content;animation:scrollX 40s linear infinite}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes scrollX{to{transform:translateX(-50%)}}
+.marq-chip{
+  display:flex;align-items:center;gap:8px;flex:none;
+  padding:12px 22px;border-radius:16px;font-size:.82rem;font-weight:800;
+  color:var(--txt);
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay);
+}
+.marq-chip .ic{width:8px;height:8px;border-radius:50%;flex:none;
+  box-shadow:0 0 8px currentColor}
+
+/* ===== SECTIONS ===== */
+section{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:70px 20px}
+.sec-head{margin-bottom:36px}
+.sec-head h2{
+  font-size:clamp(1.5rem,3.6vw,2.2rem);font-weight:900;letter-spacing:-.03em;
+  display:flex;align-items:center;gap:14px;
+}
+.sec-head h2 .bar{
+  width:6px;height:32px;border-radius:6px;flex:none;
+  background:linear-gradient(180deg,#34d399,#38bdf8);
+  box-shadow:2px 2px 6px rgba(52,211,153,.4);
+}
+.sec-head p{color:var(--muted);font-size:.94rem;margin-top:10px;margin-left:20px;font-weight:500;line-height:1.6}
+
+/* ===== STATS ===== */
+.stats-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;max-width:1200px;margin:0 auto;padding:0 20px}
+.stat-card{
+  padding:26px 18px;border-radius:24px;text-align:center;
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay);
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+}
+.stat-card:hover{transform:translateY(-6px);box-shadow:var(--clay-hover)}
+.stat-num{
+  font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;
+  font-family:'Space Grotesk',sans-serif;letter-spacing:-.03em;
+  background:linear-gradient(120deg,#10b981,#38bdf8);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.stat-lbl{font-size:.74rem;color:var(--muted);margin-top:6px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+
+/* ===== PERIODIC TABLE CONTROLS ===== */
+.pt-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.search-box{flex:1;min-width:220px;position:relative}
+.search-box input{
+  width:100%;padding:14px 16px 14px 44px;border-radius:16px;border:none;
+  background:linear-gradient(145deg,#e6ecf4,#f5f8fc);
+  box-shadow:var(--clay-inset);
+  color:var(--txt);font-size:.9rem;outline:none;font-family:inherit;font-weight:600;
+  transition:.25s;
+}
+.search-box input:focus{
+  background:linear-gradient(145deg,#e0e8f1,#f8fbff);
+  box-shadow:
+    inset 5px 5px 14px rgba(174,190,205,.55),
+    inset -5px -5px 14px rgba(255,255,255,1),
+    0 0 0 3px rgba(52,211,153,.15);
+}
+.search-box input::placeholder{color:#94a3b8;font-weight:500}
+.search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.5}
+
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+.lg{
+  font-size:.7rem;font-weight:800;padding:8px 14px;border-radius:14px;cursor:pointer;
+  border:none;font-family:inherit;color:var(--txt);
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay-btn);
+  transition:.25s;position:relative;
+}
+.lg::before{
+  content:'';display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:6px;background:var(--lc);
+  box-shadow:0 0 6px var(--lc);
+  vertical-align:middle;
+}
+.lg:hover{transform:translateY(-2px);box-shadow:var(--clay)}
+.lg.off{opacity:.35}
+.lg.off::before{background:#cbd5e1;box-shadow:none}
+
+/* ===== PERIODIC TABLE ===== */
+.pt-wrap{
+  overflow-x:auto;padding:22px 8px 16px;border-radius:28px;
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay);
+}
+.ptable{
+  display:grid;grid-template-columns:repeat(18,minmax(48px,1fr));
+  grid-template-rows:repeat(7,auto) 18px repeat(2,auto);
+  gap:6px;min-width:960px;
+}
+.el{
+  width:100%;aspect-ratio:1;border-radius:12px;cursor:pointer;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,
+    color-mix(in srgb,var(--c) 55%,#ffffff),
+    color-mix(in srgb,var(--c) 35%,#e6ecf4));
+  box-shadow:
+    3px 3px 8px color-mix(in srgb,var(--c) 30%,rgba(174,190,205,.4)),
+    -3px -3px 8px rgba(255,255,255,.9),
+    inset 1px 1px 2px rgba(255,255,255,.9),
+    inset -1px -1px 2px color-mix(in srgb,var(--c) 25%,rgba(174,190,205,.15));
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s;
+  user-select:none;
+}
+.el .z{
+  position:absolute;top:4px;left:6px;font-size:.52rem;font-weight:800;
+  opacity:.7;color:color-mix(in srgb,var(--c) 70%,#0f172a);
+}
+.el .s{
+  font-size:1rem;font-weight:900;
+  color:color-mix(in srgb,var(--c) 65%,#0f172a);
+  text-shadow:1px 1px 0 rgba(255,255,255,.8);
+}
+.el:hover{
+  transform:translateY(-6px) scale(1.08);z-index:20;
+  box-shadow:
+    8px 8px 20px color-mix(in srgb,var(--c) 45%,rgba(174,190,205,.4)),
+    -6px -6px 16px rgba(255,255,255,1),
+    inset 2px 2px 3px rgba(255,255,255,.95),
+    inset -2px -2px 3px color-mix(in srgb,var(--c) 40%,rgba(174,190,205,.25));
+}
+.el.dim{opacity:.12;pointer-events:none;filter:grayscale(1)}
+.el.ph{
+  display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;
+  color:#94a3b8;background:linear-gradient(145deg,#eff4fa,#e6ecf4);
+  box-shadow:var(--clay-inset);border-radius:10px;aspect-ratio:1;letter-spacing:.5px;
+}
+
+/* ===== MODAL ===== */
+.overlay{
+  position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(15,23,42,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.overlay.on{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  width:100%;max-width:800px;max-height:90vh;overflow-y:auto;border-radius:32px;position:relative;
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:
+    20px 20px 60px rgba(15,23,42,.25),
+    -20px -20px 60px rgba(255,255,255,1),
+    inset 2px 2px 6px rgba(255,255,255,.9);
+  animation:popIn .42s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.85) translateY(30px)}to{opacity:1;transform:none}}
+.modal-top{
+  padding:30px 30px 24px;display:flex;gap:24px;align-items:center;position:relative;
+  border-bottom:2px solid rgba(174,190,205,.2);
+  background:linear-gradient(120deg,color-mix(in srgb,var(--c) 15%,transparent),transparent 70%);
+  border-radius:32px 32px 0 0;
+}
+.modal-sym{
+  width:110px;height:110px;flex:none;border-radius:26px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;font-weight:900;position:relative;
+  background:linear-gradient(145deg,
+    color-mix(in srgb,var(--c) 60%,#ffffff),
+    color-mix(in srgb,var(--c) 35%,#e6ecf4));
+  color:color-mix(in srgb,var(--c) 60%,#0f172a);
+  box-shadow:
+    6px 6px 16px color-mix(in srgb,var(--c) 35%,rgba(174,190,205,.4)),
+    -6px -6px 16px rgba(255,255,255,.95),
+    inset 2px 2px 5px rgba(255,255,255,.9),
+    inset -2px -2px 5px color-mix(in srgb,var(--c) 30%,rgba(174,190,205,.2));
+  animation:symPulse 3s ease-in-out infinite;
+  text-shadow:2px 2px 0 rgba(255,255,255,.7);
+}
+@keyframes symPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.04)}
+}
+.modal-hd h3{font-size:2rem;font-weight:900;letter-spacing:-.03em;color:#0f172a}
+.modal-hd .cat{
+  font-size:.76rem;font-weight:800;
+  color:color-mix(in srgb,var(--c) 60%,#0f172a);
+  letter-spacing:1.4px;text-transform:uppercase;margin-top:6px;
+}
+.modal-hd .mass{color:var(--muted);font-size:.9rem;margin-top:10px;font-weight:600}
+.modal-hd .mass b{color:var(--txt);font-size:1.1rem;font-weight:900}
+.close-x{
+  position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:14px;cursor:pointer;
+  border:none;font-size:1.2rem;font-weight:700;font-family:inherit;
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);color:#64748b;
+  box-shadow:var(--clay-btn);
+  display:flex;align-items:center;justify-content:center;transition:.25s;
+}
+.close-x:hover{
+  color:#dc2626;transform:rotate(90deg);
+  box-shadow:
+    3px 3px 8px rgba(220,38,38,.3),
+    -2px -2px 8px rgba(255,255,255,.9),
+    inset 1px 1px 2px rgba(255,255,255,.7);
+}
+.modal-body{padding:26px 30px 30px}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.prop{
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  border-radius:16px;padding:14px 16px;
+  box-shadow:var(--clay-btn);
+  transition:.3s;
+}
+.prop:hover{transform:translateY(-3px);box-shadow:var(--clay)}
+.prop .k{font-size:.62rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);font-weight:800}
+.prop .v{font-size:1rem;font-weight:800;margin-top:6px;word-break:break-word;color:var(--txt)}
+.prop.wide{grid-column:span 2}
+
+.note-box{
+  border-radius:16px;padding:16px 20px;font-size:.9rem;line-height:1.7;
+  background:linear-gradient(145deg,#ecfdf5,#d1fae5);
+  border-left:4px solid #10b981;
+  color:#065f46;font-weight:500;
+  box-shadow:
+    3px 3px 10px rgba(52,211,153,.25),
+    -3px -3px 10px rgba(255,255,255,.9),
+    inset 1px 1px 2px rgba(255,255,255,.8);
+}
+.note-box b{color:#047857;font-weight:900}
+
+.modal-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{
+  padding:12px 20px;border-radius:14px;border:none;cursor:pointer;
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  color:var(--txt);font-size:.84rem;font-weight:800;font-family:inherit;
+  transition:.25s;display:flex;align-items:center;gap:7px;
+  box-shadow:var(--clay-btn);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--clay)}
+.btn:active{transform:translateY(1px);box-shadow:var(--clay-btn-pressed)}
+.btn.primary{
+  background:linear-gradient(135deg,#34d399,#10b981);color:#fff;
+  box-shadow:
+    4px 4px 12px rgba(16,185,129,.35),
+    -2px -2px 8px rgba(255,255,255,.9),
+    inset 1px 1px 3px rgba(255,255,255,.6),
+    inset -1px -1px 3px rgba(4,120,87,.25);
+}
+.btn.primary:hover{box-shadow:var(--clay-hover)}
+
+/* ===== TABS ===== */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.tab{
+  padding:12px 18px;border-radius:14px;cursor:pointer;font-size:.83rem;font-weight:800;font-family:inherit;
+  border:none;color:var(--muted);transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay-btn);
+  position:relative;
+}
+.tab:hover{color:var(--txt);transform:translateY(-2px);box-shadow:var(--clay)}
+.tab.on{
+  color:#fff;
+  background:linear-gradient(135deg,#34d399,#10b981);
+  box-shadow:
+    5px 5px 14px rgba(16,185,129,.4),
+    -3px -3px 10px rgba(255,255,255,.95),
+    inset 1px 1px 3px rgba(255,255,255,.55),
+    inset -1px -1px 3px rgba(4,120,87,.25);
+}
+.panel{display:none;animation:fadeUp .5s cubic-bezier(.34,1.56,.64,1)}
+.panel.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ===== CARDS ===== */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+.card{
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  border-radius:24px;padding:24px;
+  box-shadow:var(--clay);
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;
+}
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--clay-hover);
+}
+.card h3{
+  font-size:1.05rem;font-weight:900;margin-bottom:8px;
+  display:flex;align-items:center;gap:10px;color:var(--txt);
+}
+.card h3 .ic{
+  width:34px;height:34px;border-radius:11px;flex:none;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  background:linear-gradient(145deg,#d1fae5,#a7f3d0);
+  box-shadow:
+    2px 2px 6px rgba(52,211,153,.3),
+    -2px -2px 6px rgba(255,255,255,.9),
+    inset 1px 1px 2px rgba(255,255,255,.8);
+}
+.card .sub{font-size:.8rem;color:var(--muted);margin-bottom:18px;line-height:1.6;font-weight:500}
+
+.field{margin-bottom:13px}
+.field label{
+  display:block;font-size:.7rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.9px;color:var(--muted);margin-bottom:7px;
+}
+.field input,.field select{
+  width:100%;padding:13px 16px;border-radius:14px;font-family:inherit;
+  border:none;outline:none;color:var(--txt);font-size:.94rem;font-weight:600;
+  background:linear-gradient(145deg,#e6ecf4,#f5f8fc);
+  box-shadow:var(--clay-inset);
+  transition:.25s;
+}
+.field input:focus,.field select:focus{
+  background:linear-gradient(145deg,#e0e8f1,#f8fbff);
+  box-shadow:
+    inset 5px 5px 14px rgba(174,190,205,.55),
+    inset -5px -5px 14px rgba(255,255,255,1),
+    0 0 0 3px rgba(52,211,153,.15);
+}
+.field select option{background:#f5f8fc;color:var(--txt)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+.out{
+  margin-top:16px;padding:18px;border-radius:18px;
+  background:linear-gradient(145deg,#ecfdf5,#d1fae5);
+  box-shadow:
+    inset 4px 4px 12px rgba(52,211,153,.2),
+    inset -4px -4px 12px rgba(255,255,255,.8);
+  min-height:56px;
+}
+.out .big{
+  font-size:1.7rem;font-weight:900;color:#065f46;letter-spacing:-.02em;
+  font-family:'Space Grotesk',sans-serif;
+}
+.out .big small{font-size:.75rem;color:#047857;font-weight:700;margin-left:8px}
+.out .line{
+  font-size:.84rem;color:#065f46;margin-top:8px;
+  display:flex;justify-content:space-between;gap:10px;font-weight:600;
+}
+.out .line b{color:#047857;font-weight:900}
+.err{color:#dc2626 !important;font-size:.88rem;font-weight:700}
+.ok{color:#059669}
+
+.bd{
+  margin-top:18px;border-radius:18px;overflow:hidden;
+  box-shadow:var(--clay-inset);
+  background:linear-gradient(145deg,#e6ecf4,#f5f8fc);
+}
+.bd table{width:100%;border-collapse:collapse;font-size:.83rem}
+.bd th{
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  padding:11px 14px;text-align:left;font-size:.66rem;
+  text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:800;
+}
+.bd td{padding:10px 14px;border-top:1px solid rgba(174,190,205,.2);color:var(--txt);font-weight:600}
+.bd tr:hover td{background:rgba(52,211,153,.06)}
+.pctbar{
+  height:6px;border-radius:6px;background:rgba(174,190,205,.3);overflow:hidden;margin-top:5px;
+}
+.pctbar i{
+  display:block;height:100%;border-radius:6px;
+  background:linear-gradient(90deg,#34d399,#38bdf8);
+  transition:width .8s cubic-bezier(.34,1.56,.64,1);
+}
+
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.qb{
+  padding:8px 14px;border-radius:12px;font-size:.75rem;font-weight:800;cursor:pointer;
+  font-family:inherit;border:none;color:var(--txt);
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  box-shadow:var(--clay-btn);
+  transition:.22s;
+}
+.qb:hover{
+  transform:translateY(-2px);color:#047857;
+  box-shadow:
+    3px 3px 10px rgba(52,211,153,.25),
+    -2px -2px 8px rgba(255,255,255,.9),
+    inset 1px 1px 2px rgba(255,255,255,.8);
+}
+.qb:active{transform:translateY(1px);box-shadow:var(--clay-btn-pressed)}
+
+/* ===== REFERENCE ===== */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.ref-item{
+  background:linear-gradient(145deg,#f5f8fc,#e6ecf4);
+  border-radius:18px;padding:16px 20px;
+  box-shadow:var(--clay);
+  transition:.3s cubic-bezier(.34,1.56,.64,1);
+}
+.ref-item:hover{transform:translateX(6px);box-shadow:var(--clay-hover)}
+.ref-item .t{
+  font-size:.72rem;font-weight:900;color:var(--mint-txt);
+  letter-spacing:.7px;text-transform:uppercase;
+}
+.ref-item .f{
+  font-size:.94rem;font-weight:800;margin-top:7px;color:var(--txt);
+  font-family:'Space Grotesk',monospace;word-break:break-word;
+}
+.ref-item .d{font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5;font-weight:500}
+
+/* ===== FOOTER ===== */
+footer{
+  position:relative;z-index:1;
+  padding:50px 20px 30px;text-align:center;margin-top:50px;
+}
+footer .made{
+  font-size:1.05rem;font-weight:900;letter-spacing:-.02em;
+}
+footer .made span{
+  background:linear-gradient(90deg,#10b981,#38bdf8,#a855f7);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;font-weight:500}
+
+/* ===== REVEAL ===== */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.34,1.56,.64,1),transform 1s cubic-bezier(.34,1.56,.64,1)}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .grid2{grid-template-columns:1fr}
+  section{padding:55px 18px}
+  .hero{padding-top:110px}
+  .row2,.row3{grid-template-columns:1fr}
+  .prop.wide{grid-column:span 1}
+  .modal-top{flex-direction:column;text-align:center;padding:24px 20px}
+  .modal-body{padding:20px}
+}
+@media(max-width:640px){
+  .hero{padding:90px 16px 50px}
+  section{padding:45px 14px}
+  .ptable{min-width:820px}
+  .el .s{font-size:.82rem}
+  .el .z{font-size:.45rem}
+  .card{padding:18px}
+  .stats-strip{gap:12px;padding:0 14px}
+  .stat-card{padding:20px 14px}
+  .out .big{font-size:1.35rem}
+}
+/* ===== A+B+C: History + Sound + PWA ===== */
+.hist-panel{position:fixed;top:80px;right:20px;bottom:20px;width:340px;max-width:calc(100vw - 40px);z-index:200;padding:20px;overflow-y:auto;background:linear-gradient(145deg,#f5f8fc,#e6ecf4);border-radius:24px;box-shadow:var(--clay);transform:translateX(calc(100% + 40px));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.hist-panel.on{transform:translateX(0)}
+.hist-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid rgba(174,190,205,.2)}
+.hist-head h3{font-size:1rem;font-weight:900;color:var(--txt);font-family:'Space Grotesk',sans-serif}
+.hist-clear{padding:7px 13px;border:none;border-radius:10px;cursor:pointer;font-family:inherit;background:linear-gradient(145deg,#fee2e2,#fecaca);color:#dc2626;font-size:.72rem;font-weight:800;box-shadow:2px 2px 6px rgba(220,38,38,.25),-2px -2px 6px rgba(255,255,255,.9);transition:.25s}
+.hist-clear:hover{transform:translateY(-2px)}
+.hist-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:40px 10px;font-weight:600;line-height:1.7}
+.hist-item{background:linear-gradient(145deg,#e6ecf4,#f5f8fc);border-radius:16px;padding:13px 16px;margin-bottom:10px;box-shadow:var(--clay-inset);transition:.25s;animation:histIn .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes histIn{from{opacity:0;transform:translateX(30px)}}
+.hist-item:hover{transform:translateX(-4px);box-shadow:var(--clay)}
+.hist-title{font-size:.7rem;font-weight:900;color:var(--mint-txt);letter-spacing:.06em;text-transform:uppercase}
+.hist-result{font-size:.95rem;font-weight:800;color:var(--txt);margin-top:5px;font-family:'Space Grotesk',monospace;word-break:break-word}
+.hist-time{font-size:.65rem;color:var(--muted);margin-top:5px;font-weight:600}
+#soundTog,#histToggle{border:0;cursor:pointer;width:38px;height:38px;border-radius:13px;font-size:1rem;background:linear-gradient(145deg,#f5f8fc,#e6ecf4);box-shadow:var(--clay-btn);transition:.4s;font-family:inherit}
+#soundTog:hover,#histToggle:hover{transform:rotate(15deg) scale(1.1)}
+#histToggle.on{background:linear-gradient(145deg,#d1fae5,#a7f3d0);color:#047857}
+#installBtn{position:fixed;bottom:80px;right:18px;z-index:199;padding:14px 22px;border:0;border-radius:16px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#34d399,#10b981);box-shadow:6px 6px 16px rgba(16,185,129,.4),-4px -4px 14px rgba(255,255,255,.9);display:none;align-items:center;gap:8px}
+#installBtn.show{display:inline-flex}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);z-index:999;padding:14px 22px;border-radius:16px;background:linear-gradient(145deg,#1a2235,#0f1729);color:#f1f5f9;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;box-shadow:0 10px 40px rgba(0,0,0,.5);transition:transform .5s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:linear-gradient(145deg,#10b981,#047857)}
+.toast.err{background:linear-gradient(145deg,#dc2626,#991b1b)}
+@media(max-width:640px){.hist-panel{width:calc(100vw - 32px);right:16px;top:70px;bottom:16px}#installBtn{bottom:76px;right:14px;padding:12px 18px;font-size:.82rem}}
+</style>
+</head>
+<body>
+
+<!-- BG ORBS -->
+<div class="orb-bg">
+  <div class="o o1"></div>
+  <div class="o o2"></div>
+  <div class="o o3"></div>
+  <div class="o o4"></div>
+</div>
+
+<!-- NAV -->
+<nav class="topnav" id="topnav">
+  <div class="logo">
+    <div class="logo-orb"></div>
+    <span class="logo-text">PharmaChem<span>&nbsp;Pro</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#table">Periodic</a>
+    <a href="#tools">Calculators</a>
+    <a href="#reference">Reference</a>
+  </div>
+  <span class="credit-chip">⚡ by Mojibulla</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    <span>Built for B.Pharm → Pharm.D students</span>
+  </div>
+  <h1 id="heroH1">
+    <span class="line">Pharmacy ka</span>
+    <span class="line accent">Poora Toolkit</span>
+  </h1>
+  <p>118 elements ka interactive periodic table, molecular weight, molarity, molality, normality, alligation, dose calculation, buffer pH, kinetics — sab ek hi jagah. Bilkul free, bilkul offline.</p>
+  <div class="hero-chips">
+    <div class="chip"><b>118</b> Elements</div>
+    <div class="chip"><b>23+</b> Calculators</div>
+    <div class="chip"><b>100%</b> Offline</div>
+    <div class="chip"><b>∞</b> Free</div>
+  </div>
+  <div class="hero-cta">
+    <a href="#table" class="btn-clay primary">Explore Toolkit →</a>
+    <a href="#tools" class="btn-clay ghost">Calculators</a>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqTrack">
+    <div class="marq-chip"><span class="ic" style="background:#34d399;color:#34d399"></span>Periodic Table</div>
+    <div class="marq-chip"><span class="ic" style="background:#38bdf8;color:#38bdf8"></span>Molecular Weight</div>
+    <div class="marq-chip"><span class="ic" style="background:#a855f7;color:#a855f7"></span>Molarity</div>
+    <div class="marq-chip"><span class="ic" style="background:#fb923c;color:#fb923c"></span>Molality</div>
+    <div class="marq-chip"><span class="ic" style="background:#f472b6;color:#f472b6"></span>Normality</div>
+    <div class="marq-chip"><span class="ic" style="background:#fbbf24;color:#fbbf24"></span>Dose &amp; BSA</div>
+    <div class="marq-chip"><span class="ic" style="background:#34d399;color:#34d399"></span>Buffer pH</div>
+    <div class="marq-chip"><span class="ic" style="background:#38bdf8;color:#38bdf8"></span>Kinetics</div>
+    <div class="marq-chip"><span class="ic" style="background:#a855f7;color:#a855f7"></span>Unit Converter</div>
+    <div class="marq-chip"><span class="ic" style="background:#fb923c;color:#fb923c"></span>Alligation</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-strip" style="margin-top:40px">
+  <div class="stat-card reveal"><div class="stat-num" data-count="118">0</div><div class="stat-lbl">Elements</div></div>
+  <div class="stat-card reveal"><div class="stat-num" data-count="23" data-suffix="+">0</div><div class="stat-lbl">Calculators</div></div>
+  <div class="stat-card reveal"><div class="stat-num" data-count="100" data-suffix="%">0</div><div class="stat-lbl">Offline</div></div>
+  <div class="stat-card reveal"><div class="stat-num" data-count="0" data-prefix="∞">0</div><div class="stat-lbl">Forever Free</div></div>
+</div>
+
+<!-- PERIODIC TABLE -->
+<section id="table" class="reveal">
+  <div class="sec-head">
+    <h2><span class="bar"></span>Interactive Periodic Table</h2>
+    <p>Kisi bhi element par click karo — poori detail, properties aur pharmacy use turant samne aa jayega.</p>
+  </div>
+
+  <div class="pt-controls">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchEl" type="text" placeholder="Search element — name, symbol ya atomic number">
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="pt-wrap"><div class="ptable" id="ptable"></div></div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools" class="reveal">
+  <div class="sec-head">
+    <h2><span class="bar"></span>Calculation Lab</h2>
+    <p>Pharmaceutics, Pharmaceutical Analysis, Pharmacology — sabke calculations yahin.</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="mw">⚖️ Molecular Weight</button>
+    <button class="tab" data-t="conc">🎯 Concentration Lab</button>
+    <button class="tab" data-t="sol">🧪 Solution Lab</button>
+    <button class="tab" data-t="dose">💊 Dose &amp; BSA</button>
+    <button class="tab" data-t="ph">🧫 pH &amp; Buffer</button>
+    <button class="tab" data-t="unit">🔄 Unit Converter</button>
+    <button class="tab" data-t="kin">📈 Kinetics &amp; PK</button>
+    <button class="tab" data-t="ref">📚 Cheat Sheet</button>
+  </div>
+
+  <!-- MW -->
+  <div class="panel on" id="p-mw">
+    <div class="card">
+      <h3><span class="ic">⚖️</span> Molecular Weight Calculator</h3>
+      <div class="sub">Formula likho — brackets, hydrates aur subscripts sab support hai. Jaise: C6H12O6, Ca(OH)2, CuSO4.5H2O, (NH4)2SO4</div>
+      <div class="field">
+        <label>Chemical Formula</label>
+        <input id="mwInput" type="text" placeholder="e.g. C9H8O4" value="C9H8O4" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="quick" id="mwQuick"></div>
+      <div class="out" id="mwOut"></div>
+      <div class="bd" id="mwBd"></div>
+    </div>
+  </div>
+
+  <!-- CONCENTRATION LAB (NEW) -->
+  <div class="panel" id="p-conc">
+    <div class="grid2">
+
+      <div class="card">
+        <h3><span class="ic">🎯</span> Molarity Calculator</h3>
+        <div class="sub">M = (mass / MW) / (Volume in L). Koi bhi ek field khaali chhodo — wahi calculate hoga.</div>
+        <div class="row2">
+          <div class="field"><label>Mass (g)</label><input id="cMassM" type="number" step="any" placeholder="leave blank"></div>
+          <div class="field"><label>Molecular Weight</label><input id="cMWM" type="number" step="any" value="58.44"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Volume (mL)</label><input id="cVolM" type="number" step="any" value="500"></div>
+          <div class="field"><label>Molarity (M)</label><input id="cMM" type="number" step="any" placeholder="leave blank"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcMolaritySolve()">Calculate</button>
+        <div class="out" id="cOutM"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🎯</span> Molality Calculator</h3>
+        <div class="sub">m = (mass / MW) / kg solvent. Koi bhi ek field khaali chhodo.</div>
+        <div class="row2">
+          <div class="field"><label>Mass (g)</label><input id="cMassL" type="number" step="any" placeholder="leave blank"></div>
+          <div class="field"><label>Molecular Weight</label><input id="cMWL" type="number" step="any" value="58.44"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Solvent (kg)</label><input id="cSolvL" type="number" step="any" value="0.5"></div>
+          <div class="field"><label>Molality (m)</label><input id="cML" type="number" step="any" placeholder="leave blank"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcMolalitySolve()">Calculate</button>
+        <div class="out" id="cOutL"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🎯</span> Normality Calculator</h3>
+        <div class="sub">N = (mass × n) / (MW × V in L). Koi bhi ek field khaali chhodo. n-factor default 1.</div>
+        <div class="row2">
+          <div class="field"><label>Mass (g)</label><input id="cMassN" type="number" step="any" placeholder="leave blank"></div>
+          <div class="field"><label>Molecular Weight</label><input id="cMWN" type="number" step="any" value="98.08"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Volume (mL)</label><input id="cVolN" type="number" step="any" value="500"></div>
+          <div class="field"><label>n-factor</label><input id="cNF" type="number" step="any" value="2"></div>
+        </div>
+        <div class="field"><label>Normality (N)</label><input id="cNN" type="number" step="any" placeholder="leave blank"></div>
+        <button class="btn-clay primary" onclick="calcNormalitySolve()">Calculate</button>
+        <div class="out" id="cOutN"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🎯</span> Molarity ↔ Normality Converter</h3>
+        <div class="sub">Molarity aur Normality ke beech convert karo — sirf n-factor chahiye.</div>
+        <div class="row2">
+          <div class="field"><label>Mode</label>
+            <select id="mnMode">
+              <option value="m2n">Molarity → Normality</option>
+              <option value="n2m">Normality → Molarity</option>
+            </select>
+          </div>
+          <div class="field"><label>Value</label><input id="mnVal" type="number" step="any" value="0.5"></div>
+        </div>
+        <div class="field"><label>n-factor</label><input id="mnNF" type="number" step="any" value="2"></div>
+        <button class="btn-clay primary" onclick="calcMolarityNormality()">Convert</button>
+        <div class="out" id="mnOut"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SOLUTION LAB -->
+  <div class="panel" id="p-sol">
+    <div class="grid2">
+
+      <div class="card">
+        <h3><span class="ic">🧪</span> Molarity / Molality / Normality</h3>
+        <div class="sub">Ek saath teeno concentrations — mass, MW, volume se.</div>
+        <div class="row2">
+          <div class="field"><label>Mass (g)</label><input id="mMass" type="number" value="5.85" step="any"></div>
+          <div class="field"><label>Molecular Weight</label><input id="mMW" type="number" value="58.44" step="any"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Volume (mL)</label><input id="mVol" type="number" value="500" step="any"></div>
+          <div class="field"><label>Solvent (kg)</label><input id="mSolv" type="number" value="0.5" step="any"></div>
+        </div>
+        <div class="field"><label>n-factor (normality ke liye)</label><input id="mN" type="number" value="1" step="any"></div>
+        <button class="btn-clay primary" onclick="calcMolarity()">Calculate</button>
+        <div class="out" id="mOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">💧</span> Dilution (C₁V₁ = C₂V₂)</h3>
+        <div class="sub">Koi bhi ek box khaali chhodo — wahi calculate hoga.</div>
+        <div class="row2">
+          <div class="field"><label>C₁ (Stock)</label><input id="dC1" type="number" step="any" placeholder="blank"></div>
+          <div class="field"><label>V₁ (Stock vol.)</label><input id="dV1" type="number" step="any" placeholder="blank"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>C₂ (Final conc.)</label><input id="dC2" type="number" step="any" placeholder="blank"></div>
+          <div class="field"><label>V₂ (Final vol.)</label><input id="dV2" type="number" step="any" placeholder="blank"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcDilution()">Calculate</button>
+        <div class="out" id="dOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🔀</span> Alligation Method</h3>
+        <div class="sub">Do strengths ko mila kar desired strength banana.</div>
+        <div class="row3">
+          <div class="field"><label>Higher %</label><input id="aHi" type="number" value="90" step="any"></div>
+          <div class="field"><label>Lower %</label><input id="aLo" type="number" value="0" step="any"></div>
+          <div class="field"><label>Desired %</label><input id="aDe" type="number" value="70" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcAlligation()">Calculate Ratio</button>
+        <div class="out" id="aOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">📊</span> % Strength Converter</h3>
+        <div class="sub">% w/v, mg/mL aur ratio strength ek saath.</div>
+        <div class="row2">
+          <div class="field"><label>Solute (g)</label><input id="sG" type="number" value="0.9" step="any"></div>
+          <div class="field"><label>Volume (mL)</label><input id="sV" type="number" value="100" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcStrength()">Convert</button>
+        <div class="out" id="sOut"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DOSE -->
+  <div class="panel" id="p-dose">
+    <div class="grid2">
+
+      <div class="card">
+        <h3><span class="ic">📐</span> Body Surface Area (BSA)</h3>
+        <div class="sub">Mosteller formula — chemotherapy dosing me standard.</div>
+        <div class="row2">
+          <div class="field"><label>Height (cm)</label><input id="bsaH" type="number" value="120" step="any"></div>
+          <div class="field"><label>Weight (kg)</label><input id="bsaW" type="number" value="25" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcBSA()">Calculate BSA</button>
+        <div class="out" id="bsaOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">👶</span> Paediatric Dose</h3>
+        <div class="sub">Clark, Young, Dilling rules + BSA method.</div>
+        <div class="row2">
+          <div class="field"><label>Adult Dose (mg)</label><input id="pdAdult" type="number" value="500" step="any"></div>
+          <div class="field"><label>Child Age (years)</label><input id="pdAge" type="number" value="6" step="any"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Child Weight (kg)</label><input id="pdWt" type="number" value="20" step="any"></div>
+          <div class="field"><label>Child BSA (m²)</label><input id="pdBsa" type="number" value="0.8" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcPedia()">Calculate Doses</button>
+        <div class="out" id="pdOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">💊</span> Tablet / Dose Per Day</h3>
+        <div class="sub">Prescribed dose ke hisaab se kitni tablets deni hai.</div>
+        <div class="row3">
+          <div class="field"><label>Prescribed (mg/day)</label><input id="tDose" type="number" value="1000" step="any"></div>
+          <div class="field"><label>Tablet (mg)</label><input id="tTab" type="number" value="250" step="any"></div>
+          <div class="field"><label>Frequency/day</label><input id="tFreq" type="number" value="2" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcTablet()">Calculate</button>
+        <div class="out" id="tOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🩸</span> IV Infusion Rate</h3>
+        <div class="sub">Drops per minute aur mL/hr nikalo.</div>
+        <div class="row3">
+          <div class="field"><label>Volume (mL)</label><input id="ivV" type="number" value="500" step="any"></div>
+          <div class="field"><label>Time (hours)</label><input id="ivT" type="number" value="8" step="any"></div>
+          <div class="field"><label>Drop factor</label><input id="ivD" type="number" value="20" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcIV()">Calculate</button>
+        <div class="out" id="ivOut"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- pH -->
+  <div class="panel" id="p-ph">
+    <div class="grid2">
+
+      <div class="card">
+        <h3><span class="ic">🧫</span> pH ↔ [H⁺] Converter</h3>
+        <div class="sub">Hydrogen ion concentration se pH, pOH, [OH⁻] sab.</div>
+        <div class="row2">
+          <div class="field"><label>Mode</label>
+            <select id="phMode"><option value="h">[H⁺] → pH</option><option value="ph">pH → [H⁺]</option></select>
+          </div>
+          <div class="field"><label>Value</label><input id="phVal" type="number" value="0.001" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcPH()">Calculate</button>
+        <div class="out" id="phOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">⚗️</span> Henderson–Hasselbalch</h3>
+        <div class="sub">Buffer ka pH — pKa aur salt/acid ratio se.</div>
+        <div class="row2">
+          <div class="field"><label>pKa</label><input id="hhPka" type="number" value="4.76" step="any"></div>
+          <div class="field"><label>[A⁻] Salt (M)</label><input id="hhA" type="number" value="0.1" step="any"></div>
+        </div>
+        <div class="field"><label>[HA] Acid (M)</label><input id="hhHA" type="number" value="0.1" step="any"></div>
+        <button class="btn-clay primary" onclick="calcHH()">Calculate pH</button>
+        <div class="out" id="hhOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🔁</span> pKa ↔ Ka</h3>
+        <div class="sub">Acid dissociation constant converter.</div>
+        <div class="row2">
+          <div class="field"><label>Mode</label>
+            <select id="pkMode"><option value="k">Ka → pKa</option><option value="p">pKa → Ka</option></select>
+          </div>
+          <div class="field"><label>Value</label><input id="pkVal" type="number" value="0.000018" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcPKa()">Convert</button>
+        <div class="out" id="pkOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🧴</span> Buffer Ratio Finder</h3>
+        <div class="sub">Target pH ke liye salt:acid ratio.</div>
+        <div class="row2">
+          <div class="field"><label>pKa</label><input id="brPka" type="number" value="7.2" step="any"></div>
+          <div class="field"><label>Target pH</label><input id="brPh" type="number" value="7.4" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcBufferRatio()">Calculate Ratio</button>
+        <div class="out" id="brOut"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- UNIT -->
+  <div class="panel" id="p-unit">
+    <div class="grid2">
+
+      <div class="card">
+        <h3><span class="ic">🔄</span> Unit Converter</h3>
+        <div class="sub">Mass, volume, amount aur temperature — sab units.</div>
+        <div class="row3">
+          <div class="field"><label>Category</label>
+            <select id="ucCat" onchange="buildUnits()">
+              <option value="mass">Mass</option>
+              <option value="vol">Volume</option>
+              <option value="amt">Amount (moles)</option>
+              <option value="temp">Temperature</option>
+            </select>
+          </div>
+          <div class="field"><label>From</label><select id="ucFrom"></select></div>
+          <div class="field"><label>To</label><select id="ucTo"></select></div>
+        </div>
+        <div class="field"><label>Value</label><input id="ucVal" type="number" value="1" step="any" oninput="calcUnit()"></div>
+        <button class="btn-clay primary" onclick="calcUnit()">Convert</button>
+        <div class="out" id="ucOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🧬</span> Molarity ↔ mg/mL</h3>
+        <div class="sub">Molecular weight ke saath concentration convert karo.</div>
+        <div class="row2">
+          <div class="field"><label>Mode</label>
+            <select id="mmMode"><option value="m2g">Molarity → mg/mL</option><option value="g2m">mg/mL → Molarity</option></select>
+          </div>
+          <div class="field"><label>Value</label><input id="mmVal" type="number" value="0.1" step="any"></div>
+        </div>
+        <div class="field"><label>Molecular Weight</label><input id="mmMW" type="number" value="58.44" step="any"></div>
+        <button class="btn-clay primary" onclick="calcMolarMass()">Convert</button>
+        <div class="out" id="mmOut"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KINETICS -->
+  <div class="panel" id="p-kin">
+    <div class="grid2">
+
+      <div class="card">
+        <h3><span class="ic">⏳</span> Half-Life &amp; Elimination</h3>
+        <div class="sub">Rate constant se half-life aur reverse.</div>
+        <div class="row2">
+          <div class="field"><label>Rate constant k (hr⁻¹)</label><input id="kK" type="number" value="0.0693" step="any"></div>
+          <div class="field"><label>Mode</label>
+            <select id="kMode"><option value="kt">k → t½</option><option value="tk">t½ → k</option></select>
+          </div>
+        </div>
+        <div class="field"><label>t½ (hours) — agar mode t½→k</label><input id="kHalf" type="number" value="10" step="any"></div>
+        <button class="btn-clay primary" onclick="calcHalf()">Calculate</button>
+        <div class="out" id="kOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">📉</span> Volume of Distribution &amp; Clearance</h3>
+        <div class="sub">Vd = Dose / C₀, CL = k × Vd</div>
+        <div class="row3">
+          <div class="field"><label>Dose (mg)</label><input id="vdDose" type="number" value="500" step="any"></div>
+          <div class="field"><label>C₀ (mg/L)</label><input id="vdC" type="number" value="25" step="any"></div>
+          <div class="field"><label>k (hr⁻¹)</label><input id="vdK" type="number" value="0.1" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcVd()">Calculate</button>
+        <div class="out" id="vdOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">📈</span> Plasma Concentration at Time t</h3>
+        <div class="sub">First-order: C = C₀ × e^(−kt)</div>
+        <div class="row3">
+          <div class="field"><label>C₀ (mg/L)</label><input id="pcC0" type="number" value="100" step="any"></div>
+          <div class="field"><label>k (hr⁻¹)</label><input id="pcK" type="number" value="0.1" step="any"></div>
+          <div class="field"><label>Time (hr)</label><input id="pcT" type="number" value="6" step="any"></div>
+        </div>
+        <button class="btn-clay primary" onclick="calcConc()">Calculate</button>
+        <div class="out" id="pcOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🔁</span> Steady State Concentration</h3>
+        <div class="sub">Css = (Dose × F) / (CL × τ)</div>
+        <div class="row3">
+          <div class="field"><label>Dose (mg)</label><input id="ssDose" type="number" value="250" step="any"></div>
+          <div class="field"><label>Bioavail. F</label><input id="ssF" type="number" value="0.8" step="any"></div>
+          <div class="field"><label>CL (L/hr)</label><input id="ssCL" type="number" value="5" step="any"></div>
+        </div>
+        <div class="field"><label>Dosing interval τ (hr)</label><input id="ssTau" type="number" value="8" step="any"></div>
+        <button class="btn-clay primary" onclick="calcSS()">Calculate Css</button>
+        <div class="out" id="ssOut"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="panel" id="p-ref">
+    <div class="card" style="margin-bottom:20px">
+      <h3><span class="ic">🧾</span> Common Pharmaceutical Compounds</h3>
+      <div class="sub">MW ready reference — exam aur practical dono me kaam aayega.</div>
+      <div class="bd">
+        <table>
+          <thead><tr><th>Compound</th><th>Formula</th><th>MW (g/mol)</th><th>Use</th></tr></thead>
+          <tbody id="refTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="ic">📚</span> Formula Cheat Sheet</h3>
+      <div class="sub">Pharmacy ke sabse important formulas — ek jagah.</div>
+      <div class="ref-grid" id="cheatGrid"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- QUICK FACTS -->
+<section id="reference" class="reveal">
+  <div class="sec-head">
+    <h2><span class="bar"></span>Quick Facts</h2>
+    <p>Roj kaam aane wale constants aur conversions.</p>
+  </div>
+  <div class="ref-grid" id="factsGrid"></div>
+</section>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="made">Designed &amp; Developed by <span>Mojibulla</span></div>
+  <div class="tiny">
+    PharmaChem Pro — ek pharmacy student ka apna toolkit 🧪<br>
+    Data standard atomic weights par based hai. Clinical decisions ke liye hamesha reference book follow karo.
+  </div>
+</footer>
+<!-- ===== A+B+C: History + Install + Toast ===== -->
+<div class="hist-panel" id="histPanel">
+  <div class="hist-head">
+    <h3>📜 Recent Calculations</h3>
+    <button class="hist-clear" id="histClear">Clear</button>
+  </div>
+  <div id="histList"></div>
+</div>
+<button id="installBtn" title="Install PharmaChem Pro">📲 Install App</button>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ELEMENT DATA
+   ============================================================ */
+const RAW = `
+H|Hydrogen|1|1.008|1|1|nm|1s1|+1, -1|HCl gastric juice me; pH ka base; H2 fuel
+He|Helium|4|4.0026|18|1|ng|1s2|0|MRI magnet cooling; breathing mixtures
+Li|Lithium|3|6.94|1|2|am|[He]2s1|+1|Lithium carbonate — bipolar disorder
+Be|Beryllium|4|9.0122|2|2|ae|[He]2s2|+2|Toxic; X-ray windows me use
+B|Boron|5|10.81|13|2|ml|[He]2s2 2p1|+3|Boric acid — antiseptic, eye wash
+C|Carbon|6|12.011|14|2|nm|[He]2s2 2p2|+4, +2, -4|Activated charcoal antidote; har drug ka backbone
+N|Nitrogen|7|14.007|15|2|nm|[He]2s2 2p3|-3, +5, +3|Nitrous oxide anaesthetic; N2 packaging
+O|Oxygen|8|15.999|16|2|nm|[He]2s2 2p4|-2|Oxygen therapy; H2O2 antiseptic
+F|Fluorine|9|18.998|17|2|hl|[He]2s2 2p5|-1|Fluoride toothpaste; 5-fluorouracil anticancer
+Ne|Neon|10|20.180|18|2|ng|[He]2s2 2p6|0|Signage lasers; inert gas
+Na|Sodium|11|22.990|1|3|am|[Ne]3s1|+1|NaCl saline & ORS; NaHCO3 antacid
+Mg|Magnesium|12|24.305|2|3|ae|[Ne]3s2|+2|Milk of magnesia antacid; MgSO4 laxative
+Al|Aluminium|13|26.982|13|3|ptm|[Ne]3s2 3p1|+3|Al(OH)3 antacid; vaccine adjuvant
+Si|Silicon|14|28.085|14|3|ml|[Ne]3s2 3p2|+4|Simethicone antiflatulent; talc, glassware
+P|Phosphorus|15|30.974|15|3|nm|[Ne]3s2 3p3|-3, +5, +3|Phosphate buffer; ATP; bone health
+S|Sulfur|16|32.06|16|3|nm|[Ne]3s2 3p4|-2, +4, +6|Sulfur ointment — scabies, acne
+Cl|Chlorine|17|35.45|17|3|hl|[Ne]3s2 3p5|-1, +1, +5, +7|NaCl saline; HCl; chlorhexidine
+Ar|Argon|18|39.948|18|3|ng|[Ne]3s2 3p6|0|Sensitive drugs ke liye inert atmosphere
+K|Potassium|19|39.098|1|4|am|[Ar]4s1|+1|KCl hypokalaemia; ORS component
+Ca|Calcium|20|40.078|2|4|ae|[Ar]4s2|+2|Calcium carbonate & gluconate supplements
+Sc|Scandium|21|44.956|3|4|tm|[Ar]3d1 4s2|+3|Rare; Sc-46 tracer studies
+Ti|Titanium|22|47.867|4|4|tm|[Ar]3d2 4s2|+4, +3|TiO2 sunscreen; tablet coating
+V|Vanadium|23|50.942|5|4|tm|[Ar]3d3 4s2|+5, +4, +3|Trace element in TPN
+Cr|Chromium|24|51.996|6|4|tm|[Ar]3d5 4s1|+3, +6|TPN trace element; glucose metabolism
+Mn|Manganese|25|54.938|7|4|tm|[Ar]3d5 4s2|+2, +4, +7|TPN trace element; KMnO4 oxidant
+Fe|Iron|26|55.845|8|4|tm|[Ar]3d6 4s2|+2, +3|Ferrous sulphate — anaemia (haematinic)
+Co|Cobalt|27|58.933|9|4|tm|[Ar]3d7 4s2|+2, +3|Vitamin B12 (cyanocobalamin) ka core
+Ni|Nickel|28|58.693|10|4|tm|[Ar]3d8 4s2|+2, +3|Drug hydrogenation me catalyst
+Cu|Copper|29|63.546|11|4|tm|[Ar]3d10 4s1|+2, +1|TPN trace element; CuSO4 reagent
+Zn|Zinc|30|65.38|12|4|tm|[Ar]3d10 4s2|+2|ZnO ointment nappy rash; ZnSO4 supplement
+Ga|Gallium|31|69.723|13|4|ptm|[Ar]3d10 4s2 4p1|+3|Ga-68 PET imaging
+Ge|Germanium|32|72.630|14|4|ml|[Ar]3d10 4s2 4p2|+4|Semiconductor; Ge-68 generator
+As|Arsenic|33|74.922|15|4|ml|[Ar]3d10 4s2 4p3|+3, +5, -3|Arsenic trioxide — APL leukaemia
+Se|Selenium|34|78.971|16|4|nm|[Ar]3d10 4s2 4p4|-2, +4, +6|Selenium sulphide shampoo — dandruff
+Br|Bromine|35|79.904|17|4|hl|[Ar]3d10 4s2 4p5|-1, +5|KBr historical sedative; bromhexine
+Kr|Krypton|36|83.798|18|4|ng|[Ar]3d10 4s2 4p6|0|Kr-81m lung imaging
+Rb|Rubidium|37|85.468|1|5|am|[Kr]5s1|+1|Rb-82 cardiac PET imaging
+Sr|Strontium|38|87.62|2|5|ae|[Kr]5s2|+2|Sr-89 bone pain palliation; SrCl2
+Y|Yttrium|39|88.906|3|5|tm|[Kr]4d1 5s2|+3|Y-90 radioembolisation; YAG laser
+Zr|Zirconium|40|91.224|4|5|tm|[Kr]4d2 5s2|+4|Zr-89 imaging; implant alloys
+Nb|Niobium|41|92.906|5|5|tm|[Kr]4d4 5s1|+5|Superconducting MRI magnets
+Mo|Molybdenum|42|95.95|6|5|tm|[Kr]4d5 5s1|+6, +4|Mo-99/Tc-99m generator ka parent
+Tc|Technetium|43|98|7|5|tm|[Kr]4d5 5s2|+7|Tc-99m — nuclear medicine ka workhorse
+Ru|Ruthenium|44|101.07|8|5|tm|[Kr]4d7 5s1|+3, +4|Catalyst; Ru complexes anticancer research
+Rh|Rhodium|45|102.91|9|5|tm|[Kr]4d8 5s1|+3|Chiral drug synthesis me catalyst
+Pd|Palladium|46|106.42|10|5|tm|[Kr]4d10|+2, +4|Hydrogenation catalyst; dental alloys
+Ag|Silver|47|107.87|11|5|tm|[Kr]4d10 5s1|+1|Silver sulfadiazine — burn cream
+Cd|Cadmium|48|112.41|12|5|tm|[Kr]4d10 5s2|+2|Toxic; CdTe detectors
+In|Indium|49|114.82|13|5|ptm|[Kr]4d10 5s2 5p1|+3|In-111 imaging; alloys
+Sn|Tin|50|118.71|14|5|ptm|[Kr]4d10 5s2 5p2|+2, +4|Stannous fluoride toothpaste
+Sb|Antimony|51|121.76|15|5|ml|[Kr]4d10 5s2 5p3|+3, +5|Sodium stibogluconate — leishmaniasis
+Te|Tellurium|52|127.60|16|5|ml|[Kr]4d10 5s2 5p4|-2, +4|CdTe detectors; toxic
+I|Iodine|53|126.90|17|5|hl|[Kr]4d10 5s2 5p5|-1, +5|Povidone-iodine antiseptic; I-131 thyroid
+Xe|Xenon|54|131.29|18|5|ng|[Kr]4d10 5s2 5p6|0|Xenon anaesthesia; Xe-133 lung imaging
+Cs|Caesium|55|132.91|1|6|am|[Xe]6s1|+1|Cs-137 brachytherapy source
+Ba|Barium|56|137.33|2|6|ae|[Xe]6s2|+2|Barium sulphate — GI radiocontrast
+La|Lanthanum|57|138.91|0|6|ln|[Xe]5d1 6s2|+3|Lanthanum carbonate — phosphate binder
+Ce|Cerium|58|140.12|0|6|ln|[Xe]4f1 5d1 6s2|+3, +4|Cerium nitrate — burn dressings
+Pr|Praseodymium|59|140.91|0|6|ln|[Xe]4f3 6s2|+3|Magnets; special glass
+Nd|Neodymium|60|144.24|0|6|ln|[Xe]4f4 6s2|+3|Nd:YAG laser — ophthalmology, surgery
+Pm|Promethium|61|145|0|6|ln|[Xe]4f5 6s2|+3|Pm-147 beta source
+Sm|Samarium|62|150.36|0|6|ln|[Xe]4f6 6s2|+3, +2|Sm-153 bone metastasis pain relief
+Eu|Europium|63|151.96|0|6|ln|[Xe]4f7 6s2|+3, +2|Luminescent immunoassay labels
+Gd|Gadolinium|64|157.25|0|6|ln|[Xe]4f7 5d1 6s2|+3|Gadolinium — MRI contrast agent
+Tb|Terbium|65|158.93|0|6|ln|[Xe]4f9 6s2|+3|Assay fluorescence labels
+Dy|Dysprosium|66|162.50|0|6|ln|[Xe]4f10 6s2|+3|MRI contrast research
+Ho|Holmium|67|164.93|0|6|ln|[Xe]4f11 6s2|+3|Ho-166 radiosynovectomy
+Er|Erbium|68|167.26|0|6|ln|[Xe]4f12 6s2|+3|Er:YAG laser — skin resurfacing
+Tm|Thulium|69|168.93|0|6|ln|[Xe]4f13 6s2|+3|Tm-170 portable X-ray source
+Yb|Ytterbium|70|173.05|0|6|ln|[Xe]4f14 6s2|+3, +2|Yb-169 brachytherapy source
+Lu|Lutetium|71|174.97|0|6|ln|[Xe]4f14 5d1 6s2|+3|Lu-177 peptide receptor radiotherapy
+Hf|Hafnium|72|178.49|4|6|tm|[Xe]4f14 5d2 6s2|+4|Hafnium oxide — radiotherapy enhancer
+Ta|Tantalum|73|180.95|5|6|tm|[Xe]4f14 5d3 6s2|+5|Surgical implants, sutures
+W|Tungsten|74|183.84|6|6|tm|[Xe]4f14 5d4 6s2|+6|Radiation shielding; X-ray tube target
+Re|Rhenium|75|186.21|7|6|tm|[Xe]4f14 5d5 6s2|+7|Re-186/188 bone pain palliation
+Os|Osmium|76|190.23|8|6|tm|[Xe]4f14 5d6 6s2|+4, +8|OsO4 tissue fixative & staining
+Ir|Iridium|77|192.22|9|6|tm|[Xe]4f14 5d7 6s2|+3, +4|Ir-192 brachytherapy source
+Pt|Platinum|78|195.08|10|6|tm|[Xe]4f14 5d9 6s1|+2, +4|Cisplatin, carboplatin — anticancer
+Au|Gold|79|196.97|11|6|tm|[Xe]4f14 5d10 6s1|+3, +1|Auranofin — rheumatoid arthritis
+Hg|Mercury|80|200.59|12|6|tm|[Xe]4f14 5d10 6s2|+2, +1|Thiomersal preservative; thermometers
+Tl|Thallium|81|204.38|13|6|ptm|[Xe]4f14 5d10 6s2 6p1|+1, +3|Tl-201 cardiac perfusion imaging
+Pb|Lead|82|207.2|14|6|ptm|[Xe]4f14 5d10 6s2 6p2|+2, +4|Radiation shielding; lead poisoning
+Bi|Bismuth|83|208.98|15|6|ptm|[Xe]4f14 5d10 6s2 6p3|+3, +5|Bismuth subsalicylate — antidiarrhoeal
+Po|Polonium|84|209|16|6|ptm|[Xe]4f14 5d10 6s2 6p4|+2, +4|Highly radioactive
+At|Astatine|85|210|17|6|hl|[Xe]4f14 5d10 6s2 6p5|-1, +1|At-211 targeted alpha therapy research
+Rn|Radon|86|222|18|6|ng|[Xe]4f14 5d10 6s2 6p6|0|Radioactive gas; lung cancer risk
+Fr|Francium|87|223|1|7|am|[Rn]7s1|+1|Highly radioactive; research only
+Ra|Radium|88|226|2|7|ae|[Rn]7s2|+2|Ra-223 — prostate cancer bone mets
+Ac|Actinium|89|227|0|7|an|[Rn]6d1 7s2|+3|Ac-225 targeted alpha therapy
+Th|Thorium|90|232.04|0|7|an|[Rn]6d2 7s2|+4|Th-227 radiotherapy research
+Pa|Protactinium|91|231.04|0|7|an|[Rn]5f2 6d1 7s2|+5|Research only; radioactive
+U|Uranium|92|238.03|0|7|an|[Rn]5f3 6d1 7s2|+6, +4|Nuclear fuel
+Np|Neptunium|93|237|0|7|an|[Rn]5f4 6d1 7s2|+5|Research; radioactive
+Pu|Plutonium|94|244|0|7|an|[Rn]5f6 7s2|+4|Nuclear; Pu-238 pacemaker batteries
+Am|Americium|95|243|0|7|an|[Rn]5f7 7s2|+3|Am-241 smoke detectors
+Cm|Curium|96|247|0|7|an|[Rn]5f7 6d1 7s2|+3|Cm-244 alpha source
+Bk|Berkelium|97|247|0|7|an|[Rn]5f9 7s2|+3|Research only
+Cf|Californium|98|251|0|7|an|[Rn]5f10 7s2|+3|Cf-252 neutron source
+Es|Einsteinium|99|252|0|7|an|[Rn]5f11 7s2|+3|Research only
+Fm|Fermium|100|257|0|7|an|[Rn]5f12 7s2|+3|Research only
+Md|Mendelevium|101|258|0|7|an|[Rn]5f13 7s2|+3|Research only
+No|Nobelium|102|259|0|7|an|[Rn]5f14 7s2|+2, +3|Research only
+Lr|Lawrencium|103|266|0|7|an|[Rn]5f14 7s2 7p1|+3|Research only
+Rf|Rutherfordium|104|267|4|7|tm|[Rn]5f14 6d2 7s2|+4|Research only
+Db|Dubnium|105|268|5|7|tm|[Rn]5f14 6d3 7s2|+5|Research only
+Sg|Seaborgium|106|269|6|7|tm|[Rn]5f14 6d4 7s2|+6|Research only
+Bh|Bohrium|107|270|7|7|tm|[Rn]5f14 6d5 7s2|+7|Research only
+Hs|Hassium|108|269|8|7|tm|[Rn]5f14 6d6 7s2|+8|Research only
+Mt|Meitnerium|109|278|9|7|tm|[Rn]5f14 6d7 7s2|+3|Research only
+Ds|Darmstadtium|110|281|10|7|tm|[Rn]5f14 6d8 7s2|+4|Research only
+Rg|Roentgenium|111|282|11|7|tm|[Rn]5f14 6d9 7s2|+3|Research only
+Cn|Copernicium|112|285|12|7|tm|[Rn]5f14 6d10 7s2|+2|Research only
+Nh|Nihonium|113|286|13|7|ptm|[Rn]5f14 6d10 7s2 7p1|+1|Research only
+Fl|Flerovium|114|289|14|7|ptm|[Rn]5f14 6d10 7s2 7p2|+2|Research only
+Mc|Moscovium|115|290|15|7|ptm|[Rn]5f14 6d10 7s2 7p3|+1|Research only
+Lv|Livermorium|116|293|16|7|ptm|[Rn]5f14 6d10 7s2 7p4|+2|Research only
+Ts|Tennessine|117|294|17|7|hl|[Rn]5f14 6d10 7s2 7p5|-1|Research only
+Og|Oganesson|118|294|18|7|ng|[Rn]5f14 6d10 7s2 7p6|0|Research only
+`;
+
+const CATS = {
+  am:{n:'Alkali Metal',c:'var(--c-am)'},
+  ae:{n:'Alkaline Earth',c:'var(--c-ae)'},
+  tm:{n:'Transition Metal',c:'var(--c-tm)'},
+  ptm:{n:'Post-Transition',c:'var(--c-ptm)'},
+  ml:{n:'Metalloid',c:'var(--c-ml)'},
+  nm:{n:'Nonmetal',c:'var(--c-nm)'},
+  hl:{n:'Halogen',c:'var(--c-hl)'},
+  ng:{n:'Noble Gas',c:'var(--c-ng)'},
+  ln:{n:'Lanthanide',c:'var(--c-ln)'},
+  an:{n:'Actinide',c:'var(--c-an)'}
+};
+const CAT_COLORS = {
+  am:'#fda4af', ae:'#fdba74', tm:'#7dd3fc', ptm:'#67e8f9', ml:'#c4b5fd',
+  nm:'#6ee7b7', hl:'#fde047', ng:'#f9a8d4', ln:'#d8b4fe', an:'#fb7185'
+};
+
+const ELEMENTS = RAW.trim().split('\n').map(l=>{
+  const p = l.split('|');
+  return {sym:p[0],name:p[1],z:+p[2],mass:+p[3],group:+p[4],period:+p[5],cat:p[6],config:p[7],val:p[8],note:p[9]||''};
+});
+const BY_SYM = {};
+ELEMENTS.forEach(e=>BY_SYM[e.sym]=e);
+
+const GASES = ['H','He','N','O','F','Ne','Cl','Ar','Kr','Xe','Rn'];
+const LIQUIDS = ['Br','Hg'];
+function phaseOf(e){if(GASES.includes(e.sym))return 'Gas';if(LIQUIDS.includes(e.sym))return 'Liquid';return 'Solid';}
+function blockOf(e){if(e.cat==='ln'||e.cat==='an')return 'f';if(e.sym==='He')return 's';if(e.group<=2)return 's';if(e.group>=13)return 'p';return 'd';}
+
+/* BUILD PERIODIC TABLE */
+const ptable = document.getElementById('ptable');
+function buildTable(){
+  ptable.innerHTML = '';
+  ELEMENTS.forEach(e=>{
+    const d = document.createElement('div');
+    d.className = 'el';
+    d.style.setProperty('--c', CAT_COLORS[e.cat]);
+    d.dataset.sym = e.sym;
+    d.dataset.cat = e.cat;
+    d.title = `${e.name} (${e.sym}) — Z=${e.z}, MW=${e.mass}`;
+    d.innerHTML = `<span class="z">${e.z}</span><span class="s">${e.sym}</span>`;
+    if(e.cat==='ln'){ d.style.gridRow = 9; d.style.gridColumn = e.z - 54; }
+    else if(e.cat==='an'){ d.style.gridRow = 10; d.style.gridColumn = e.z - 86; }
+    else { d.style.gridRow = e.period; d.style.gridColumn = e.group; }
+    d.onclick = ()=>openElement(e.sym);
+    ptable.appendChild(d);
+  });
+  const ph1 = document.createElement('div');
+  ph1.className='el ph'; ph1.textContent='57-71'; ph1.style.gridRow=6; ph1.style.gridColumn=3;
+  const ph2 = document.createElement('div');
+  ph2.className='el ph'; ph2.textContent='89-103'; ph2.style.gridRow=7; ph2.style.gridColumn=3;
+  ptable.appendChild(ph1); ptable.appendChild(ph2);
+}
+buildTable();
+
+/* LEGEND */
+const legendEl = document.getElementById('legend');
+let activeCats = new Set(Object.keys(CATS));
+Object.entries(CATS).forEach(([k,v])=>{
+  const b = document.createElement('button');
+  b.className='lg'; b.dataset.cat=k;
+  b.style.setProperty('--lc', CAT_COLORS[k]);
+  b.textContent = v.n;
+  b.onclick = ()=>{
+    if(activeCats.has(k)){ activeCats.delete(k); b.classList.add('off'); }
+    else { activeCats.add(k); b.classList.remove('off'); }
+    applyFilter();
+  };
+  legendEl.appendChild(b);
+});
+
+/* SEARCH & FILTER */
+const searchEl = document.getElementById('searchEl');
+searchEl.addEventListener('input', applyFilter);
+function applyFilter(){
+  const q = searchEl.value.trim().toLowerCase();
+  document.querySelectorAll('.el:not(.ph)').forEach(el=>{
+    const sym = el.dataset.sym;
+    const e = BY_SYM[sym];
+    let ok = true;
+    if(q){ ok = e.name.toLowerCase().includes(q) || e.sym.toLowerCase()===q || e.sym.toLowerCase().startsWith(q) || String(e.z)===q; }
+    if(ok && !activeCats.has(e.cat)) ok = false;
+    el.classList.toggle('dim', !ok);
+  });
+}
+
+/* MODAL */
+const overlay = document.getElementById('overlay');
+const modal = document.getElementById('modal');
+function openElement(sym){
+  const e = BY_SYM[sym];
+  if(!e) return;
+  modal.style.setProperty('--c', CAT_COLORS[e.cat]);
+  modal.innerHTML = `
+    <div class="modal-top">
+      <div class="modal-sym">${e.sym}</div>
+      <div class="modal-hd">
+        <h3>${e.name}</h3>
+        <div class="cat">${CATS[e.cat].n}</div>
+        <div class="mass">Atomic Mass: <b>${e.mass}</b> g/mol · Z = <b>${e.z}</b></div>
+      </div>
+      <div class="close-x" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="prop-grid">
+        <div class="prop"><div class="k">Atomic Number</div><div class="v">${e.z}</div></div>
+        <div class="prop"><div class="k">Atomic Mass</div><div class="v">${e.mass}</div></div>
+        <div class="prop"><div class="k">Group</div><div class="v">${e.group||'—'}</div></div>
+        <div class="prop"><div class="k">Period</div><div class="v">${e.period}</div></div>
+        <div class="prop"><div class="k">Block</div><div class="v">${blockOf(e)}-block</div></div>
+        <div class="prop"><div class="k">Phase (STP)</div><div class="v">${phaseOf(e)}</div></div>
+        <div class="prop wide"><div class="k">Electronic Configuration</div><div class="v" style="font-family:'Space Grotesk',monospace;font-size:.9rem">${e.config}</div></div>
+        <div class="prop wide"><div class="k">Valency / Oxidation</div><div class="v">${e.val}</div></div>
+      </div>
+      <div class="note-box"><b>💊 Pharmacy Relevance:</b> ${e.note}</div>
+      <div class="modal-acts">
+        <button class="btn primary" onclick="useInMW('${e.sym}')">⚖️ MW Calculator me add</button>
+        <button class="btn" onclick="copyText('${e.mass}')">📋 Mass copy</button>
+        <button class="btn" onclick="copyText('${e.sym}')">📋 Symbol copy</button>
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>`;
+  overlay.classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){ overlay.classList.remove('on'); document.body.style.overflow=''; }
+overlay.addEventListener('click', ev=>{ if(ev.target===overlay) closeModal(); });
+document.addEventListener('keydown', ev=>{ if(ev.key==='Escape') closeModal(); });
+function copyText(t){ navigator.clipboard?.writeText(t); }
+function useInMW(sym){
+  closeModal();
+  const inp = document.getElementById('mwInput');
+  inp.value = (inp.value||'') + sym;
+  switchTab('mw');
+  calcMW();
+  document.getElementById('tools').scrollIntoView({behavior:'smooth'});
+}
+
+/* FORMULA PARSER */
+function parseFormula(str){
+  const counts = {};
+  const s = String(str).replace(/\s+/g,'');
+  if(!s) return counts;
+  parseSeg(s, 0, 1, counts);
+  return counts;
+}
+function parseSeg(s, i, mult, counts){
+  while(i < s.length){
+    const c = s[i];
+    if(c==='(' || c==='['){
+      let depth = 1, j = i+1;
+      while(j < s.length){
+        if(s[j]==='(' || s[j]==='[') depth++;
+        else if(s[j]===')' || s[j]===']'){ depth--; if(depth===0) break; }
+        j++;
+      }
+      const inner = s.slice(i+1, j);
+      let k = j+1, num = '';
+      while(k < s.length && /\d/.test(s[k])){ num += s[k]; k++; }
+      const n = num ? parseInt(num) : 1;
+      parseSeg(inner, 0, mult*n, counts);
+      i = k;
+    }
+    else if(/[A-Z]/.test(c)){
+      let sym = c, k = i+1;
+      if(k < s.length && /[a-z]/.test(s[k])){ sym += s[k]; k++; }
+      let num = '';
+      while(k < s.length && /\d/.test(s[k])){ num += s[k]; k++; }
+      const n = num ? parseInt(num) : 1;
+      counts[sym] = (counts[sym]||0) + n*mult;
+      i = k;
+    }
+    else if(c==='.' || c==='·' || c==='*'){
+      const rest = s.slice(i+1);
+      const m = rest.match(/^(\d+)/);
+      let mul = 1, st = 0;
+      if(m){ mul = parseInt(m[1]); st = m[1].length; }
+      parseSeg(rest.slice(st), 0, mult*mul, counts);
+      return;
+    } else { i++; }
+  }
+}
+function fmt(n, d=3){
+  if(!isFinite(n)) return '—';
+  const s = Number(n).toFixed(d);
+  return s.replace(/\.?0+$/,'') || '0';
+}
+function sci(n){
+  if(n===0) return '0';
+  const e = Math.floor(Math.log10(Math.abs(n)));
+  if(e>=-3 && e<=4) return fmt(n, 5);
+  const m = n/Math.pow(10,e);
+  return `${fmt(m,3)} × 10^${e}`;
+}
+
+/* MW CALCULATOR */
+const COMMON = [
+  ['Glucose','C6H12O6'],['Paracetamol','C8H9NO2'],['Aspirin','C9H8O4'],
+  ['Ibuprofen','C13H18O2'],['Caffeine','C8H10N4O2'],['Ascorbic Acid','C6H8O6'],
+  ['NaCl','NaCl'],['NaOH','NaOH'],['HCl','HCl'],['H2SO4','H2SO4'],
+  ['CaCO3','CaCO3'],['NaHCO3','NaHCO3'],['KMnO4','KMnO4'],
+  ['CuSO4·5H2O','CuSO4.5H2O'],['Citric Acid','C6H8O7'],['EDTA','C10H16N2O8'],
+  ['Metformin','C4H11N5'],['Morphine','C17H19NO3'],['Penicillin G','C16H18N2O4S'],
+  ['Salbutamol','C13H21NO3'],['Diazepam','C16H13ClN2O'],['Amoxicillin','C16H19N3O5S']
+];
+const mwQuick = document.getElementById('mwQuick');
+COMMON.forEach(([n,f])=>{
+  const b = document.createElement('button');
+  b.className='qb'; b.textContent = n; b.title = f;
+  b.onclick = ()=>{ document.getElementById('mwInput').value = f; calcMW(); };
+  mwQuick.appendChild(b);
+});
+const mwInput = document.getElementById('mwInput');
+mwInput.addEventListener('input', calcMW);
+function calcMW(){
+  const f = mwInput.value.trim();
+  const out = document.getElementById('mwOut');
+  const bd  = document.getElementById('mwBd');
+  if(!f){ out.innerHTML = '<div style="color:#64748b;font-size:.85rem;font-weight:600">Formula likho…</div>'; bd.innerHTML=''; return; }
+  let counts;
+  try{ counts = parseFormula(f); }catch(err){ counts = {}; }
+  const keys = Object.keys(counts);
+  if(!keys.length){ out.innerHTML = '<div class="err">❌ Valid formula nahi hai.</div>'; bd.innerHTML=''; return; }
+  const bad = keys.filter(k=>!BY_SYM[k]);
+  if(bad.length){
+    out.innerHTML = `<div class="err">❌ Unknown symbol: <b>${bad.join(', ')}</b><br><span style="font-size:.78rem">Pehla letter capital, dusra small (jaise "Na", "Cl").</span></div>`;
+    bd.innerHTML=''; return;
+  }
+  let total = 0;
+  const rows = keys.map(k=>{
+    const el = BY_SYM[k];
+    const sub = el.mass * counts[k];
+    total += sub;
+    return {sym:k, name:el.name, n:counts[k], am:el.mass, sub};
+  }).sort((a,b)=>b.sub-a.sub);
+  rows.forEach(r=> r.pct = (r.sub/total)*100);
+  out.innerHTML = `
+    <div class="big">${fmt(total,4)} <small>g/mol</small></div>
+    <div class="line"><span>Molar Mass</span><b>${total.toFixed(4)} g/mol</b></div>
+    <div class="line"><span>Total Atoms</span><b>${rows.reduce((s,r)=>s+r.n,0)}</b></div>
+    <div class="line"><span>1 mmol weighs</span><b>${(total/1000).toFixed(4)} g</b></div>
+    <div class="line"><span>1 g contains</span><b>${(1000/total).toFixed(4)} mmol</b></div>
+  `;
+  bd.innerHTML = `<table>
+    <thead><tr><th>Element</th><th>Count</th><th>Atomic</th><th>Subtotal</th><th>% Comp.</th></tr></thead>
+    <tbody>${rows.map(r=>`
+      <tr>
+        <td><b>${r.sym}</b> <span style="color:#64748b;font-size:.75rem">${r.name}</span></td>
+        <td>${r.n}</td>
+        <td>${r.am}</td>
+        <td>${fmt(r.sub,4)}</td>
+        <td style="min-width:110px">${fmt(r.pct,2)}%
+          <div class="pctbar"><i style="width:${r.pct}%"></i></div>
+        </td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+/* ========== CONCENTRATION LAB — SOLVE ANY (NEW) ========== */
+function calcMolaritySolve(){
+  const fields = ['cMassM','cMWM','cVolM','cMM'];
+  const vals = fields.map(id=>{const v=document.getElementById(id).value; return v===''?null:parseFloat(v);});
+  const out = document.getElementById('cOutM');
+  const blanks = vals.filter(v=>v===null).length;
+  if(blanks!==1){
+    out.innerHTML = '<div class="err">Exactly ek field khaali chhodo — baaki bharo.</div>';
+    return;
+  }
+  let [mass, mw, vol, M] = vals;
+  let solved = '', result = 0;
+  if(mass===null){ mass = (M*mw*vol)/1000; solved='Mass (g)'; result=mass; }
+  else if(mw===null){ mw = (mass*1000)/(M*vol); solved='Molecular Weight'; result=mw; }
+  else if(vol===null){ vol = (mass*1000)/(M*mw); solved='Volume (mL)'; result=vol; }
+  else { M = (mass/mw)/(vol/1000); solved='Molarity (M)'; result=M; }
+  out.innerHTML = `
+    <div class="big">${fmt(result,4)} <small>${solved}</small></div>
+    <div class="line"><span>Mass</span><b>${fmt(mass,4)} g</b></div>
+    <div class="line"><span>MW</span><b>${fmt(mw,3)} g/mol</b></div>
+    <div class="line"><span>Volume</span><b>${fmt(vol,3)} mL</b></div>
+    <div class="line"><span>Molarity</span><b>${fmt(M,4)} M</b></div>
+  `;
+}
+
+function calcMolalitySolve(){
+  const fields = ['cMassL','cMWL','cSolvL','cML'];
+  const vals = fields.map(id=>{const v=document.getElementById(id).value; return v===''?null:parseFloat(v);});
+  const out = document.getElementById('cOutL');
+  const blanks = vals.filter(v=>v===null).length;
+  if(blanks!==1){
+    out.innerHTML = '<div class="err">Exactly ek field khaali chhodo — baaki bharo.</div>';
+    return;
+  }
+  let [mass, mw, solv, m] = vals;
+  let solved = '', result = 0;
+  if(mass===null){ mass = m*mw*solv; solved='Mass (g)'; result=mass; }
+  else if(mw===null){ mw = mass/(m*solv); solved='Molecular Weight'; result=mw; }
+  else if(solv===null){ solv = mass/(mw*m); solved='Solvent (kg)'; result=solv; }
+  else { m = (mass/mw)/solv; solved='Molality (m)'; result=m; }
+  out.innerHTML = `
+    <div class="big">${fmt(result,4)} <small>${solved}</small></div>
+    <div class="line"><span>Mass</span><b>${fmt(mass,4)} g</b></div>
+    <div class="line"><span>MW</span><b>${fmt(mw,3)} g/mol</b></div>
+    <div class="line"><span>Solvent</span><b>${fmt(solv,4)} kg</b></div>
+    <div class="line"><span>Molality</span><b>${fmt(m,4)} m</b></div>
+  `;
+}
+
+function calcNormalitySolve(){
+  const fields = ['cMassN','cMWN','cVolN','cNF','cNN'];
+  const vals = fields.map(id=>{const v=document.getElementById(id).value; return v===''?null:parseFloat(v);});
+  const out = document.getElementById('cOutN');
+  const blanks = vals.filter(v=>v===null).length;
+  if(blanks!==1){
+    out.innerHTML = '<div class="err">Exactly ek field khaali chhodo — baaki bharo.</div>';
+    return;
+  }
+  let [mass, mw, vol, nf, N] = vals;
+  let solved = '', result = 0;
+  if(mass===null){ mass = (N*mw*(vol/1000))/nf; solved='Mass (g)'; result=mass; }
+  else if(mw===null){ mw = (mass*nf)/(N*(vol/1000)); solved='Molecular Weight'; result=mw; }
+  else if(vol===null){ vol = (mass*nf*1000)/(mw*N); solved='Volume (mL)'; result=vol; }
+  else if(nf===null){ nf = (N*mw*(vol/1000))/mass; solved='n-factor'; result=nf; }
+  else { N = (mass*nf)/(mw*(vol/1000)); solved='Normality (N)'; result=N; }
+  const M = (mass/mw)/(vol/1000);
+  out.innerHTML = `
+    <div class="big">${fmt(result,4)} <small>${solved}</small></div>
+    <div class="line"><span>Mass</span><b>${fmt(mass,4)} g</b></div>
+    <div class="line"><span>MW</span><b>${fmt(mw,3)} g/mol</b></div>
+    <div class="line"><span>Volume</span><b>${fmt(vol,3)} mL</b></div>
+    <div class="line"><span>n-factor</span><b>${fmt(nf,2)}</b></div>
+    <div class="line"><span>Molarity</span><b>${fmt(M,4)} M</b></div>
+    <div class="line"><span>Normality</span><b>${fmt(N,4)} N</b></div>
+  `;
+}
+
+function calcMolarityNormality(){
+  const mode = document.getElementById('mnMode').value;
+  const val = parseFloat(document.getElementById('mnVal').value);
+  const nf = parseFloat(document.getElementById('mnNF').value);
+  const out = document.getElementById('mnOut');
+  if(!val || !nf){ out.innerHTML='<div class="err">Value aur n-factor bharo.</div>'; return; }
+  if(mode==='m2n'){
+    const N = val*nf;
+    out.innerHTML = `
+      <div class="big">${fmt(N,4)} <small>N (Normality)</small></div>
+      <div class="line"><span>Molarity</span><b>${fmt(val,4)} M</b></div>
+      <div class="line"><span>n-factor</span><b>${fmt(nf,2)}</b></div>
+      <div class="line"><span>Formula</span><b>N = M × n</b></div>
+    `;
+  } else {
+    const M = val/nf;
+    out.innerHTML = `
+      <div class="big">${fmt(M,4)} <small>M (Molarity)</small></div>
+      <div class="line"><span>Normality</span><b>${fmt(val,4)} N</b></div>
+      <div class="line"><span>n-factor</span><b>${fmt(nf,2)}</b></div>
+      <div class="line"><span>Formula</span><b>M = N / n</b></div>
+    `;
+  }
+}
+
+/* ========== SOLUTION CALCULATORS (ORIGINAL) ========== */
+function calcMolarity(){
+  const mass = parseFloat(document.getElementById('mMass').value);
+  const mw   = parseFloat(document.getElementById('mMW').value);
+  const vol  = parseFloat(document.getElementById('mVol').value);
+  const solv = parseFloat(document.getElementById('mSolv').value);
+  const nf   = parseFloat(document.getElementById('mN').value)||1;
+  const out  = document.getElementById('mOut');
+  if(!mass||!mw||!vol){ out.innerHTML='<div class="err">Mass, MW aur Volume bharo.</div>'; return; }
+  const moles = mass/mw;
+  const M = moles/(vol/1000);
+  const molality = solv>0 ? moles/solv : null;
+  out.innerHTML = `
+    <div class="big">${fmt(M,4)} <small>mol/L (M)</small></div>
+    <div class="line"><span>Moles of solute</span><b>${fmt(moles,5)} mol</b></div>
+    <div class="line"><span>Millimoles</span><b>${fmt(moles*1000,3)} mmol</b></div>
+    <div class="line"><span>Millimolarity</span><b>${fmt(M*1000,2)} mM</b></div>
+    ${molality!==null?`<div class="line"><span>Molality</span><b>${fmt(molality,4)} mol/kg</b></div>`:''}
+    <div class="line"><span>Normality (n=${nf})</span><b>${fmt(M*nf,4)} N</b></div>
+  `;
+}
+
+function calcDilution(){
+  const C1=document.getElementById('dC1').value, V1=document.getElementById('dV1').value;
+  const C2=document.getElementById('dC2').value, V2=document.getElementById('dV2').value;
+  const out = document.getElementById('dOut');
+  const vals = [C1,V1,C2,V2].map(v=>v===''?null:parseFloat(v));
+  const empty = vals.filter(v=>v===null).length;
+  if(empty!==1){ out.innerHTML='<div class="err">Exactly ek box khaali chhodo — baaki teen bharo.</div>'; return; }
+  let [c1,v1,c2,v2] = vals;
+  let label='';
+  if(c1===null){ c1 = (c2*v2)/v1; label='C₁ (Stock concentration)'; }
+  else if(v1===null){ v1 = (c2*v2)/c1; label='V₁ (Stock volume)'; }
+  else if(c2===null){ c2 = (c1*v1)/v2; label='C₂ (Final concentration)'; }
+  else { v2 = (c1*v1)/c2; label='V₂ (Final volume)'; }
+  out.innerHTML = `
+    <div class="big">${fmt(label.includes('C')?c1:(label.includes('V₁')?v1:(label.includes('C₂')?c2:v2)),4)}</div>
+    <div class="line"><span>Calculated</span><b>${label}</b></div>
+    <div class="line"><span>Equation</span><b>C₁V₁ = C₂V₂</b></div>
+    <div class="line"><span>Check</span><b>${fmt(c1*v1,4)} = ${fmt(c2*v2,4)}</b></div>
+    ${label.includes('V₁')?`<div class="line"><span>Solvent add karo</span><b>${fmt(v2-v1,3)} mL</b></div>`:''}
+  `;
+}
+
+function calcAlligation(){
+  const hi=parseFloat(document.getElementById('aHi').value);
+  const lo=parseFloat(document.getElementById('aLo').value);
+  const de=parseFloat(document.getElementById('aDe').value);
+  const out=document.getElementById('aOut');
+  if(isNaN(hi)||isNaN(lo)||isNaN(de)){ out.innerHTML='<div class="err">Teeno values bharo.</div>'; return; }
+  if(de>hi || de<lo){ out.innerHTML='<div class="err">Desired, higher aur lower ke beech honi chahiye.</div>'; return; }
+  const partsHi = de - lo;
+  const partsLo = hi - de;
+  const total = partsHi + partsLo;
+  out.innerHTML = `
+    <div class="big">${fmt(partsHi,2)} : ${fmt(partsLo,2)}</div>
+    <div class="line"><span>Higher (${fmt(hi,2)}%)</span><b>${fmt(partsHi,2)} parts</b></div>
+    <div class="line"><span>Lower (${fmt(lo,2)}%)</span><b>${fmt(partsLo,2)} parts</b></div>
+    <div class="line"><span>Total parts</span><b>${fmt(total,2)}</b></div>
+    <div class="line"><span>Ratio</span><b>${fmt(partsHi/total*100,2)}% : ${fmt(partsLo/total*100,2)}%</b></div>
+  `;
+}
+
+function calcStrength(){
+  const g=parseFloat(document.getElementById('sG').value);
+  const v=parseFloat(document.getElementById('sV').value);
+  const out=document.getElementById('sOut');
+  if(!g||!v){ out.innerHTML='<div class="err">Solute aur volume bharo.</div>'; return; }
+  const pct = g/v*100;
+  const mgml = g*1000/v;
+  const ratio = 1/(g/v);
+  out.innerHTML = `
+    <div class="big">${fmt(pct,4)} <small>% w/v</small></div>
+    <div class="line"><span>mg/mL</span><b>${fmt(mgml,4)} mg/mL</b></div>
+    <div class="line"><span>Ratio strength</span><b>1 : ${fmt(ratio,2)}</b></div>
+    <div class="line"><span>mcg/mL</span><b>${fmt(mgml*1000,2)} mcg/mL</b></div>
+  `;
+}
+
+/* DOSE */
+function calcBSA(){
+  const h=parseFloat(document.getElementById('bsaH').value);
+  const w=parseFloat(document.getElementById('bsaW').value);
+  const out=document.getElementById('bsaOut');
+  if(!h||!w){ out.innerHTML='<div class="err">Height aur weight bharo.</div>'; return; }
+  const bsa = Math.sqrt(h*w/3600);
+  out.innerHTML = `
+    <div class="big">${fmt(bsa,4)} <small>m²</small></div>
+    <div class="line"><span>Formula</span><b>√(ht × wt / 3600)</b></div>
+    <div class="line"><span>Adult avg (1.73 m²) ka</span><b>${fmt(bsa/1.73*100,2)}%</b></div>
+  `;
+}
+
+function calcPedia(){
+  const adult=parseFloat(document.getElementById('pdAdult').value);
+  const age=parseFloat(document.getElementById('pdAge').value);
+  const wt=parseFloat(document.getElementById('pdWt').value);
+  const bsa=parseFloat(document.getElementById('pdBsa').value);
+  const out=document.getElementById('pdOut');
+  if(!adult){ out.innerHTML='<div class="err">Adult dose bharo.</div>'; return; }
+  const lb = wt*2.2046;
+  const clark = adult * (lb/150);
+  const young = adult * (age/(age+12));
+  const dill  = adult * (age/20);
+  const bsaM  = adult * (bsa/1.73);
+  out.innerHTML = `
+    <div class="big">${fmt(young,2)} <small>mg (Young)</small></div>
+    <div class="line"><span>Clark (wt/150 lb)</span><b>${fmt(clark,2)} mg</b></div>
+    <div class="line"><span>Young (age/(age+12))</span><b>${fmt(young,2)} mg</b></div>
+    <div class="line"><span>Dilling (age/20)</span><b>${fmt(dill,2)} mg</b></div>
+    <div class="line"><span>BSA method</span><b>${fmt(bsaM,2)} mg</b></div>
+    <div class="line"><span>Weight in lb</span><b>${fmt(lb,2)} lb</b></div>
+  `;
+}
+
+function calcTablet(){
+  const dose=parseFloat(document.getElementById('tDose').value);
+  const tab=parseFloat(document.getElementById('tTab').value);
+  const freq=parseFloat(document.getElementById('tFreq').value)||1;
+  const out=document.getElementById('tOut');
+  if(!dose||!tab){ out.innerHTML='<div class="err">Dose aur tablet strength bharo.</div>'; return; }
+  const tabs = dose/tab;
+  const perDose = tabs/freq;
+  out.innerHTML = `
+    <div class="big">${fmt(tabs,2)} <small>tablets / day</small></div>
+    <div class="line"><span>Per dose (${freq}×)</span><b>${fmt(perDose,3)} tablet</b></div>
+    <div class="line"><span>Total per dose (mg)</span><b>${fmt(dose/freq,2)} mg</b></div>
+  `;
+}
+
+function calcIV(){
+  const v=parseFloat(document.getElementById('ivV').value);
+  const t=parseFloat(document.getElementById('ivT').value);
+  const df=parseFloat(document.getElementById('ivD').value)||20;
+  const out=document.getElementById('ivOut');
+  if(!v||!t){ out.innerHTML='<div class="err">Volume aur time bharo.</div>'; return; }
+  const mlhr = v/t;
+  const mlmin = mlhr/60;
+  const dpm = mlmin*df;
+  out.innerHTML = `
+    <div class="big">${fmt(dpm,1)} <small>drops / minute</small></div>
+    <div class="line"><span>Flow rate</span><b>${fmt(mlhr,2)} mL/hr</b></div>
+    <div class="line"><span>Per minute</span><b>${fmt(mlmin,3)} mL/min</b></div>
+    <div class="line"><span>Drop factor</span><b>${df} drops/mL</b></div>
+  `;
+}
+
+/* pH */
+function calcPH(){
+  const mode=document.getElementById('phMode').value;
+  const val=parseFloat(document.getElementById('phVal').value);
+  const out=document.getElementById('phOut');
+  if(!val && val!==0){ out.innerHTML='<div class="err">Value bharo.</div>'; return; }
+  let pH;
+  if(mode==='h'){ if(val<=0){ out.innerHTML='<div class="err">[H⁺] positive hona chahiye.</div>'; return; } pH=-Math.log10(val); }
+  else { pH=val; }
+  const H = Math.pow(10,-pH);
+  const pOH = 14-pH;
+  const OH = Math.pow(10,-pOH);
+  out.innerHTML = `
+    <div class="big">pH = ${fmt(pH,3)}</div>
+    <div class="line"><span>[H⁺]</span><b>${sci(H)} M</b></div>
+    <div class="line"><span>pOH</span><b>${fmt(pOH,3)}</b></div>
+    <div class="line"><span>[OH⁻]</span><b>${sci(OH)} M</b></div>
+    <div class="line"><span>Nature</span><b>${pH<7?'Acidic':pH>7?'Basic':'Neutral'}</b></div>
+  `;
+}
+
+function calcHH(){
+  const pka=parseFloat(document.getElementById('hhPka').value);
+  const A=parseFloat(document.getElementById('hhA').value);
+  const HA=parseFloat(document.getElementById('hhHA').value);
+  const out=document.getElementById('hhOut');
+  if(!A||!HA){ out.innerHTML='<div class="err">Salt aur acid concentration bharo.</div>'; return; }
+  const pH = pka + Math.log10(A/HA);
+  out.innerHTML = `
+    <div class="big">pH = ${fmt(pH,3)}</div>
+    <div class="line"><span>Ratio [A⁻]/[HA]</span><b>${fmt(A/HA,4)}</b></div>
+    <div class="line"><span>log(ratio)</span><b>${fmt(Math.log10(A/HA),4)}</b></div>
+    <div class="line"><span>Buffer best range</span><b>${fmt(pka-1,2)} – ${fmt(pka+1,2)}</b></div>
+  `;
+}
+
+function calcPKa(){
+  const mode=document.getElementById('pkMode').value;
+  const val=parseFloat(document.getElementById('pkVal').value);
+  const out=document.getElementById('pkOut');
+  if(!val){ out.innerHTML='<div class="err">Value bharo.</div>'; return; }
+  if(mode==='k'){
+    if(val<=0){ out.innerHTML='<div class="err">Ka positive hona chahiye.</div>'; return; }
+    const p = -Math.log10(val);
+    out.innerHTML = `<div class="big">pKa = ${fmt(p,4)}</div>
+      <div class="line"><span>Ka</span><b>${sci(val)}</b></div>
+      <div class="line"><span>Strength</span><b>${p<0?'Very strong':p<3?'Strong':p<7?'Moderate':'Weak'}</b></div>`;
+  } else {
+    const k = Math.pow(10,-val);
+    out.innerHTML = `<div class="big">Ka = ${sci(k)}</div>
+      <div class="line"><span>pKa</span><b>${fmt(val,3)}</b></div>
+      <div class="line"><span>Strength</span><b>${val<0?'Very strong':val<3?'Strong':val<7?'Moderate':'Weak'}</b></div>`;
+  }
+}
+
+function calcBufferRatio(){
+  const pka=parseFloat(document.getElementById('brPka').value);
+  const ph=parseFloat(document.getElementById('brPh').value);
+  const out=document.getElementById('brOut');
+  if(isNaN(pka)||isNaN(ph)){ out.innerHTML='<div class="err">pKa aur pH bharo.</div>'; return; }
+  const ratio = Math.pow(10, ph-pka);
+  out.innerHTML = `
+    <div class="big">1 : ${fmt(ratio,4)}</div>
+    <div class="line"><span>Salt : Acid</span><b>${fmt(ratio,4)} : 1</b></div>
+    <div class="line"><span>Salt ka %</span><b>${fmt(ratio/(1+ratio)*100,2)}%</b></div>
+    <div class="line"><span>pH − pKa</span><b>${fmt(ph-pka,3)}</b></div>
+  `;
+}
+
+/* UNIT */
+const UNITS = {
+  mass: {kg:1000, g:1, mg:0.001, mcg:1e-6, ng:1e-9, pg:1e-12, lb:453.59237, oz:28.349523, grain:0.06479891},
+  vol:  {L:1, mL:0.001, µL:1e-6, dL:0.1, gal:3.785411784, 'fl oz':0.0295735296, tsp:0.00492892159, tbsp:0.0147867648, drop:0.00005, cup:0.236588236},
+  amt:  {mol:1, mmol:0.001, µmol:1e-6, nmol:1e-9, pmol:1e-12}
+};
+function buildUnits(){
+  const cat = document.getElementById('ucCat').value;
+  const from = document.getElementById('ucFrom');
+  const to   = document.getElementById('ucTo');
+  from.innerHTML=''; to.innerHTML='';
+  if(cat==='temp'){
+    ['°C','°F','K'].forEach(u=>{ from.innerHTML+=`<option>${u}</option>`; to.innerHTML+=`<option>${u}</option>`; });
+    to.value='°F';
+  } else {
+    Object.keys(UNITS[cat]).forEach(u=>{ from.innerHTML+=`<option>${u}</option>`; to.innerHTML+=`<option>${u}</option>`; });
+    const ks = Object.keys(UNITS[cat]);
+    from.value = ks[1]||ks[0];
+    to.value   = ks[2]||ks[0];
+  }
+  calcUnit();
+}
+function tempConvert(v, from, to){
+  let c;
+  if(from==='°C') c=v; else if(from==='°F') c=(v-32)*5/9; else c=v-273.15;
+  if(to==='°C') return c; if(to==='°F') return c*9/5+32; return c+273.15;
+}
+function calcUnit(){
+  const cat=document.getElementById('ucCat').value;
+  const from=document.getElementById('ucFrom').value;
+  const to=document.getElementById('ucTo').value;
+  const v=parseFloat(document.getElementById('ucVal').value);
+  const out=document.getElementById('ucOut');
+  if(isNaN(v)){ out.innerHTML='<div style="color:#64748b;font-size:.85rem;font-weight:600">Value daalo…</div>'; return; }
+  let res;
+  if(cat==='temp'){ res = tempConvert(v, from, to); }
+  else { res = v * UNITS[cat][from] / UNITS[cat][to]; }
+  out.innerHTML = `
+    <div class="big">${fmt(res,6)} <small>${to}</small></div>
+    <div class="line"><span>Input</span><b>${fmt(v,6)} ${from}</b></div>
+  `;
+}
+buildUnits();
+
+function calcMolarMass(){
+  const mode=document.getElementById('mmMode').value;
+  const val=parseFloat(document.getElementById('mmVal').value);
+  const mw=parseFloat(document.getElementById('mmMW').value);
+  const out=document.getElementById('mmOut');
+  if(!val||!mw){ out.innerHTML='<div class="err">Value aur MW bharo.</div>'; return; }
+  if(mode==='m2g'){
+    const mgml = val*mw;
+    out.innerHTML = `
+      <div class="big">${fmt(mgml,4)} <small>mg/mL</small></div>
+      <div class="line"><span>g/L</span><b>${fmt(mgml,4)} g/L</b></div>
+      <div class="line"><span>% w/v</span><b>${fmt(mgml/10,4)} %</b></div>
+      <div class="line"><span>mcg/mL</span><b>${fmt(mgml*1000,2)} mcg/mL</b></div>`;
+  } else {
+    const M = val/mw;
+    out.innerHTML = `
+      <div class="big">${fmt(M,6)} <small>mol/L</small></div>
+      <div class="line"><span>mM</span><b>${fmt(M*1000,4)} mM</b></div>
+      <div class="line"><span>% w/v</span><b>${fmt(val/10,4)} %</b></div>
+      <div class="line"><span>g/L</span><b>${fmt(val,4)} g/L</b></div>`;
+  }
+}
+
+/* KINETICS */
+function calcHalf(){
+  const mode=document.getElementById('kMode').value;
+  const out=document.getElementById('kOut');
+  let k;
+  if(mode==='kt'){
+    k = parseFloat(document.getElementById('kK').value);
+    if(!k||k<=0){ out.innerHTML='<div class="err">k positive hona chahiye.</div>'; return; }
+    const th = 0.693/k;
+    out.innerHTML = `
+      <div class="big">${fmt(th,4)} <small>hours</small></div>
+      <div class="line"><span>t½</span><b>${fmt(th,4)} hr</b></div>
+      <div class="line"><span>Rate constant k</span><b>${fmt(k,5)} hr⁻¹</b></div>
+      <div class="line"><span>Time for 90% elim.</span><b>${fmt(2.303/k,3)} hr</b></div>
+      <div class="line"><span>5 t½ (steady state)</span><b>${fmt(5*th,3)} hr</b></div>`;
+  } else {
+    const th = parseFloat(document.getElementById('kHalf').value);
+    if(!th||th<=0){ out.innerHTML='<div class="err">t½ positive hona chahiye.</div>'; return; }
+    k = 0.693/th;
+    out.innerHTML = `
+      <div class="big">${fmt(k,5)} <small>hr⁻¹</small></div>
+      <div class="line"><span>Half-life</span><b>${fmt(th,4)} hr</b></div>
+      <div class="line"><span>Steady state (~5 t½)</span><b>${fmt(5*th,3)} hr</b></div>`;
+  }
+}
+
+function calcVd(){
+  const dose=parseFloat(document.getElementById('vdDose').value);
+  const c0=parseFloat(document.getElementById('vdC').value);
+  const k=parseFloat(document.getElementById('vdK').value);
+  const out=document.getElementById('vdOut');
+  if(!dose||!c0){ out.innerHTML='<div class="err">Dose aur C₀ bharo.</div>'; return; }
+  const vd = dose/c0;
+  let html = `
+    <div class="big">${fmt(vd,3)} <small>L</small></div>
+    <div class="line"><span>Vd</span><b>${fmt(vd,3)} L</b></div>
+    <div class="line"><span>Vd per kg</span><b>${fmt(vd/70,4)} L/kg</b></div>`;
+  if(k>0){
+    const cl = k*vd;
+    html += `<div class="line"><span>Clearance</span><b>${fmt(cl,4)} L/hr</b></div>
+             <div class="line"><span>Half-life</span><b>${fmt(0.693/k,3)} hr</b></div>`;
+  }
+  out.innerHTML = html;
+}
+
+function calcConc(){
+  const c0=parseFloat(document.getElementById('pcC0').value);
+  const k=parseFloat(document.getElementById('pcK').value);
+  const t=parseFloat(document.getElementById('pcT').value);
+  const out=document.getElementById('pcOut');
+  if(!c0||!k){ out.innerHTML='<div class="err">C₀ aur k bharo.</div>'; return; }
+  const C = c0*Math.exp(-k*t);
+  out.innerHTML = `
+    <div class="big">${fmt(C,4)} <small>mg/L</small></div>
+    <div class="line"><span>C₀</span><b>${fmt(c0,3)} mg/L</b></div>
+    <div class="line"><span>Time</span><b>${fmt(t,2)} hr</b></div>
+    <div class="line"><span>Remaining %</span><b>${fmt(C/c0*100,2)}%</b></div>
+    <div class="line"><span>t½</span><b>${fmt(0.693/k,3)} hr</b></div>`;
+}
+
+function calcSS(){
+  const dose=parseFloat(document.getElementById('ssDose').value);
+  const F=parseFloat(document.getElementById('ssF').value);
+  const cl=parseFloat(document.getElementById('ssCL').value);
+  const tau=parseFloat(document.getElementById('ssTau').value);
+  const out=document.getElementById('ssOut');
+  if(!dose||!cl||!tau){ out.innerHTML='<div class="err">Dose, CL aur τ bharo.</div>'; return; }
+  const css = (dose*F)/(cl*tau);
+  out.innerHTML = `
+    <div class="big">${fmt(css,4)} <small>mg/L</small></div>
+    <div class="line"><span>Css</span><b>${fmt(css,4)} mg/L</b></div>
+    <div class="line"><span>Daily dose</span><b>${fmt(dose*(24/tau),2)} mg/day</b></div>
+    <div class="line"><span>Dosing rate</span><b>${fmt(dose*F/tau,3)} mg/hr</b></div>`;
+}
+
+/* REFERENCE DATA */
+const REF_COMPOUNDS = [
+  ['Paracetamol','C8H9NO2','151.16','Analgesic / Antipyretic'],
+  ['Aspirin','C9H8O4','180.16','Analgesic / Antiplatelet'],
+  ['Ibuprofen','C13H18O2','206.28','NSAID'],
+  ['Caffeine','C8H10N4O2','194.19','CNS Stimulant'],
+  ['Ascorbic Acid','C6H8O6','176.12','Vitamin / Antioxidant'],
+  ['Glucose','C6H12O6','180.16','Energy / IV fluid'],
+  ['NaCl','NaCl','58.44','0.9% Normal Saline'],
+  ['NaHCO3','NaHCO3','84.01','Antacid / Alkalinizer'],
+  ['CaCO3','CaCO3','100.09','Antacid / Ca supplement'],
+  ['MgSO4','MgSO4','120.37','Laxative / Eclampsia'],
+  ['KMnO4','KMnO4','158.03','Antiseptic / Oxidant'],
+  ['Citric Acid','C6H8O7','192.12','Acidifier / Buffer'],
+  ['EDTA (Disodium)','C10H14N2Na2O8','336.21','Chelating agent'],
+  ['Metformin HCl','C4H11N5','129.16','Antidiabetic'],
+  ['Morphine','C17H19NO3','285.34','Opioid analgesic'],
+  ['Diazepam','C16H13ClN2O','284.75','Benzodiazepine'],
+  ['Salbutamol','C13H21NO3','239.31','Bronchodilator'],
+  ['Amoxicillin','C16H19N3O5S','365.40','Antibiotic'],
+  ['Penicillin G','C16H18N2O4S','334.39','Antibiotic'],
+  ['Ciprofloxacin','C17H18FN3O3','331.34','Fluoroquinolone'],
+  ['Omeprazole','C17H19N3O3S','345.42','PPI'],
+  ['Atorvastatin','C33H35FN2O5','558.64','Statin'],
+  ['Warfarin','C19H15NaO4','330.31','Anticoagulant'],
+  ['Furosemide','C12H11ClN2O5S','330.74','Loop diuretic'],
+  ['CuSO4·5H2O','CuSO4.5H2O','249.69','Reagent / Fungicide'],
+  ['FeSO4·7H2O','FeSO4.7H2O','278.02','Haematinic'],
+  ['NaOH','NaOH','40.00','Alkalinizer'],
+  ['HCl','HCl','36.46','Acidifier'],
+  ['H2SO4','H2SO4','98.08','Strong acid'],
+  ['KCl','KCl','74.55','Hypokalaemia']
+];
+const refTable = document.getElementById('refTable');
+REF_COMPOUNDS.forEach(([n,f,m,u])=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><b>${n}</b></td><td style="font-family:'Space Grotesk',monospace;color:#059669">${f}</td><td><b>${m}</b></td><td style="color:#64748b">${u}</td>`;
+  refTable.appendChild(tr);
+});
+
+const CHEATS = [
+  ['Molarity','M = moles / L solution','mol/L — sabse basic'],
+  ['Moles','n = mass / MW','Mol nikalne ka formula'],
+  ['Molality','m = moles / kg solvent','Temperature independent'],
+  ['Normality','N = M × n-factor','Acid-base titration'],
+  ['% w/v','% w/v = (g solute / mL sol) × 100','0.9% NaCl = 0.9 g/100 mL'],
+  ['% w/w','% w/w = (g solute / g prep) × 100','Ointments, creams'],
+  ['% v/v','% v/v = (mL solute / mL sol) × 100','Alcohol solutions'],
+  ['Dilution','C₁V₁ = C₂V₂','Stock se working'],
+  ['Alligation','(H−D) : (D−L)','Do strengths mix karna'],
+  ['Henderson–Hasselbalch','pH = pKa + log([A⁻]/[HA])','Buffer pH'],
+  ['pH / pOH','pH + pOH = 14 (25°C)','pH = −log[H⁺]'],
+  ['Half-life','t½ = 0.693 / k','First-order'],
+  ['Vd','Vd = Dose / C₀','Drug distribution'],
+  ['Clearance','CL = k × Vd','Elimination rate'],
+  ['Steady State','Css = (Dose × F) / (CL × τ)','Repeated dosing'],
+  ['BSA (Mosteller)','BSA = √(ht × wt / 3600)','Chemo dosing'],
+  ['Clark\'s Rule','Adult × (wt lb / 150)','Paediatric'],
+  ['Young\'s Rule','Adult × age/(age+12)','1–12 saal'],
+  ['Dilling\'s Rule','Adult × age/20','Quick estimate'],
+  ['IV Drip Rate','drops/min = (mL × df) / min','Infusion'],
+  ['Isotonic Saline','0.9% w/v NaCl ≈ 308 mOsm/L','Blood isotonic'],
+  ['Ideal Body Weight','50 + 2.3 × (in − 60) male','Dosing weight'],
+  ['1 Grain','= 64.8 mg','Old prescriptions'],
+  ['Drop Volume','20 drops = 1 mL','Infusion std']
+];
+const cheatGrid = document.getElementById('cheatGrid');
+CHEATS.forEach(([t,f,d])=>{
+  const div = document.createElement('div');
+  div.className='ref-item';
+  div.innerHTML = `<div class="t">${t}</div><div class="f">${f}</div><div class="d">${d}</div>`;
+  cheatGrid.appendChild(div);
+});
+
+const FACTS = [
+  ['Normal Saline','0.9% w/v NaCl','308 mOsm/L — isotonic'],
+  ['Ringer\'s Lactate','Na 130, K 4, Ca 3, Cl 109','Fluid replacement'],
+  ['D5W','5% Dextrose','252 mOsm/L'],
+  ['Blood pH','7.35 – 7.45','< 7.35 acidosis'],
+  ['Gastric pH','1.5 – 3.5','HCl ki wajah se'],
+  ['Urine pH','4.6 – 8.0','Diet dependent'],
+  ['Body Temp','37°C / 98.6°F','Oral 36.5–37.5°C'],
+  ['1 Teaspoon','5 mL','Liquid dose'],
+  ['1 Tablespoon','15 mL','3 tsp'],
+  ['1 fl oz','29.57 mL','US fluid ounce'],
+  ['1 Pound','453.592 g','Weight conversion'],
+  ['Avogadro','6.022 × 10²³','Particles per mole'],
+  ['Molar Vol (STP)','22.4 L/mol','Gas calculations']
+];
+const factsGrid = document.getElementById('factsGrid');
+FACTS.forEach(([t,f,d])=>{
+  const div = document.createElement('div');
+  div.className='ref-item';
+  div.innerHTML = `<div class="t">${t}</div><div class="f">${f}</div><div class="d">${d}</div>`;
+  factsGrid.appendChild(div);
+});
+
+/* TABS */
+const tabsEl = document.getElementById('tabs');
+tabsEl.addEventListener('click', e=>{
+  const b = e.target.closest('.tab');
+  if(!b) return;
+  switchTab(b.dataset.t);
+});
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x.dataset.t===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on', p.id==='p-'+t));
+}
+
+/* MARQUEE DUPLICATE */
+const marqTrack = document.getElementById('marqTrack');
+marqTrack.innerHTML += marqTrack.innerHTML;
+
+/* HERO LETTER REVEAL */
+function splitHeroLetters(){
+  const h1 = document.getElementById('heroH1');
+  h1.querySelectorAll('.line').forEach(line => {
+    const text = line.textContent;
+    line.textContent = '';
+    [...text].forEach(ch => {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.style.opacity = '0';
+      span.style.filter = 'blur(10px)';
+      span.style.transform = 'translateY(50px) scale(.9)';
+      line.appendChild(span);
+    });
+  });
+  const chars = h1.querySelectorAll('.char');
+  chars.forEach((ch, i) => {
+    setTimeout(() => {
+      ch.style.transition = 'opacity 1s cubic-bezier(.34,1.56,.64,1), transform 1s cubic-bezier(.34,1.56,.64,1), filter 1s';
+      ch.style.opacity = '1';
+      ch.style.filter = 'blur(0)';
+      ch.style.transform = 'translateY(0) scale(1)';
+    }, 250 + i * 30);
+  });
+}
+splitHeroLetters();
+
+/* NAV SCROLL */
+const topnav = document.getElementById('topnav');
+window.addEventListener('scroll', ()=>{
+  if(window.scrollY > 40) topnav.classList.add('scrolled');
+  else topnav.classList.remove('scrolled');
+});
+
+/* COUNTERS */
+function animateCounter(el){
+  const target = parseInt(el.dataset.count, 10);
+  const suffix = el.dataset.suffix || '';
+  const prefix = el.dataset.prefix || '';
+  const dur = 1800;
+  const start = performance.now();
+  function tick(now){
+    const t = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(eased * target);
+    el.textContent = prefix + val + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* REVEAL */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in');
+      entry.target.querySelectorAll('[data-count]').forEach(animateCounter);
+      io.unobserve(entry.target);
+    }
+  });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* SMOOTH ANCHOR */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const id = a.getAttribute('href');
+    if(id.length > 1){
+      const target = document.querySelector(id);
+      if(target){
+        e.preventDefault();
+        window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+      }
+    }
+  });
+});
+
+/* INIT */
+calcMW();
+calcMolarity();
+calcBSA();
+calcUnit();
+buildUnits();
+console.log('%cPharmaChem Pro — Clay Edition','color:#10b981;font-size:20px;font-weight:900');
+console.log('%cDesigned by Mojibulla','color:#a855f7;font-size:13px;font-weight:700');
+</script>
+</body>
+<script>
+(function(){
+const $=i=>document.getElementById(i);
+const CL=['#6ee7b7','#7dd3fc','#c4b5fd','#fdba74','#f9a8d4','#fde047'];
+const SY=['H','C','N','O','Na','Fe','Cl','Zn','Ca','K','Mg','S','P','Cu','Ag','I'];
+
+/* ---------- CSS ---------- */
+const css=`
+html.lk,html.lk body{overflow:hidden}
+#gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%,#1e293b,#020617 72%);clip-path:circle(150% at 50% 50%);transition:clip-path 1s cubic-bezier(.7,0,.2,1);color:#e2e8f0;font-family:Outfit,system-ui,sans-serif}
+#gate.go{clip-path:circle(0% at 50% 50%)}
+#gc{position:absolute;inset:0}
+@property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spin{to{--a:360deg}}
+@keyframes gIn{from{opacity:0;transform:translateY(70px) scale(.8) rotateX(30deg)}}
+@keyframes shake{20%,60%{transform:translateX(-14px)}40%,80%{transform:translateX(14px)}}
+@keyframes gOut{to{transform:scale(1.18);opacity:0;filter:blur(8px)}}
+@keyframes bg{to{background-position:200% 0}}
+@keyframes fl2{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-26px) rotate(8deg)}}
+.g-card{position:relative;z-index:2;width:min(92vw,380px);padding:34px 26px 28px;border-radius:30px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.65);animation:gIn 1s cubic-bezier(.34,1.56,.64,1) both}
+.g-card::before{content:'';position:absolute;inset:-2px;z-index:-1;border-radius:32px;background:conic-gradient(from var(--a),#34d399,#38bdf8,#a855f7,#f472b6,#fbbf24,#34d399);animation:spin 4s linear infinite}
+.g-card::after{content:'';position:absolute;inset:0;z-index:-1;border-radius:30px;background:#0b1220}
+.g-card.bad{animation:shake .5s}
+.g-card.bad::before{background:conic-gradient(from var(--a),#f43f5e,#fb923c,#f43f5e)}
+#gate.ok .g-card{animation:gOut .9s .5s forwards}
+.g-lock{width:84px;height:84px;margin:0 auto 14px;filter:drop-shadow(0 0 18px rgba(52,211,153,.6));animation:fl2 3s ease-in-out infinite}
+#sh{transition:transform .6s cubic-bezier(.34,1.56,.64,1);transform-origin:44px 30px}
+#gate.ok #sh{transform:translateY(-9px) rotate(28deg)}
+#gate.ok .g-lock{animation:none;transform:scale(1.3);transition:.6s;filter:drop-shadow(0 0 34px #34d399)}
+.g-card h2{font:900 1.7rem 'Space Grotesk',Outfit,sans-serif;letter-spacing:-.03em;background:linear-gradient(120deg,#34d399,#38bdf8,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.g-card p{color:#94a3b8;font-size:.9rem;line-height:1.6;margin-top:8px}
+.g-in{position:relative;margin:20px 0 12px}
+#gpw{width:100%;padding:15px 48px 15px 18px;border-radius:16px;border:2px solid #334155;background:#0f172a;color:#fff;font:600 1rem Outfit,sans-serif;letter-spacing:.12em;text-align:center;outline:0;transition:.3s}
+#gpw:focus{border-color:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.18),0 0 30px rgba(52,211,153,.25)}
+#ge{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:0;border:0;font-size:1.1rem;cursor:pointer;opacity:.7}
+.g-btn{width:100%;padding:15px;border:0;border-radius:16px;font:800 1rem Outfit,sans-serif;color:#042f2e;cursor:pointer;background:linear-gradient(120deg,#34d399,#38bdf8,#a78bfa,#34d399);background-size:300% 100%;animation:bg 3s linear infinite;box-shadow:0 10px 30px rgba(52,211,153,.35);transition:transform .25s}
+.g-btn:hover{transform:translateY(-3px) scale(1.02)}.g-btn:active{transform:scale(.97)}
+#gm{min-height:22px;margin-top:12px;font-size:.86rem;font-weight:700;color:#fda4af}
+
+#pg{position:fixed;top:0;left:0;height:4px;width:0;z-index:300;background:linear-gradient(90deg,#34d399,#38bdf8,#a855f7,#f472b6);box-shadow:0 0 12px #38bdf8;border-radius:0 4px 4px 0}
+#cg{position:fixed;left:0;top:0;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(52,211,153,.2),rgba(56,189,248,.1) 45%,transparent 70%);will-change:transform}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:10000}
+#up{position:fixed;right:18px;bottom:18px;z-index:200;width:48px;height:48px;border:0;border-radius:16px;cursor:pointer;font-size:1.2rem;background:linear-gradient(145deg,#f5f8fc,#e6ecf4);box-shadow:var(--clay);opacity:0;transform:translateY(80px) scale(.6);transition:.5s cubic-bezier(.34,1.56,.64,1)}
+#up.on{opacity:1;transform:none}
+#nt{border:0;cursor:pointer;width:38px;height:38px;border-radius:13px;font-size:1rem;background:linear-gradient(145deg,#f5f8fc,#e6ecf4);box-shadow:var(--clay-btn);transition:.4s}
+#nt:hover{transform:rotate(25deg) scale(1.1)}
+html.nt{filter:invert(.92) hue-rotate(180deg)}
+.nav-links a.act{color:#047857;background:linear-gradient(145deg,#e6ecf4,#f5f8fc);box-shadow:var(--clay-btn)}
+.typer{margin-top:22px;font:700 clamp(1rem,2.4vw,1.35rem) 'Space Grotesk',sans-serif;color:#0f172a;min-height:1.6em}
+.typer i{display:inline-block;width:3px;height:1.1em;margin-left:4px;vertical-align:-.15em;background:#10b981;animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.fl{position:absolute;z-index:0;font-size:2.2rem;opacity:.55;pointer-events:none;animation:fl2 8s ease-in-out infinite;filter:drop-shadow(4px 6px 6px rgba(100,116,139,.35))}
+.hero>*:not(.fl):not(.scroll-hint){position:relative;z-index:1}
+.el.wv{animation:wv .7s backwards cubic-bezier(.34,1.56,.64,1);animation-delay:calc(var(--i)*22ms)}
+@keyframes wv{from{opacity:0;transform:scale(.2) rotate(-35deg) translateY(30px)}}
+.rv2{opacity:0}
+.rv2.in2{opacity:1;animation:up2 .8s backwards cubic-bezier(.34,1.56,.64,1);animation-delay:var(--d,0s)}
+@keyframes up2{from{opacity:0;transform:translateY(46px) scale(.93) rotateX(12deg)}}
+.btn-clay,.btn,.qb,.tab{position:relative;overflow:hidden}
+.rp{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:rp .6s ease-out forwards;pointer-events:none}
+@keyframes rp{to{transform:scale(1);opacity:0}}
+.out .big.pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.6);opacity:0;filter:blur(6px)}100%{transform:none;opacity:1;filter:none}}
+.bohr{text-align:center;margin-bottom:22px}
+.bohr svg{width:min(70vw,220px);height:auto}
+.bohr .bl{font-size:.8rem;font-weight:800;color:#64748b;letter-spacing:.06em;margin-top:2px}
+.bohr .ring{fill:none;stroke:rgba(100,116,139,.3);stroke-width:1}
+.bohr .o{animation:rot linear infinite;transform-origin:100px 100px}
+@keyframes rot{to{transform:rotate(360deg)}}
+`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+
+/* ---------- GATE + OVERLAYS (instant, before anything paints) ---------- */
+document.documentElement.classList.add('lk');
+document.body.insertAdjacentHTML('afterbegin',
+'<div id="gate"><canvas id="gc"></canvas><div class="g-card" id="gcard"><div class="g-lock"><svg viewBox="0 0 64 64" width="84" height="84"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs><path id="sh" d="M20 30V20a12 12 0 0 1 24 0v10" fill="none" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/><rect x="11" y="29" width="42" height="29" rx="9" fill="url(#lg)"/><circle cx="32" cy="42" r="4.5" fill="#0f172a"/><rect x="30.5" y="44" width="3" height="8" rx="1.5" fill="#0f172a"/></svg></div><h2>PharmaChem Pro</h2><p>Secret lab ka darwaza band hai 🔐<br>Password daalo aur andar aao</p><div class="g-in"><input id="gpw" type="password" placeholder="Password" autocomplete="off" spellcheck="false"><button id="ge" type="button">👁</button></div><button class="g-btn" id="gb" type="button">Unlock ✨</button><div id="gm"></div></div></div><canvas id="fx"></canvas><div id="cg"></div><div id="pg"></div><button id="up" type="button">↑</button>');
+
+/* ---------- CONFETTI / BURST ---------- */
+const fx=$('fx'),fc=fx.getContext('2d');let P=[],run=0;
+function sz(){fx.width=innerWidth;fx.height=innerHeight}sz();addEventListener('resize',sz);
+function burst(x,y,n,big){
+  for(let i=0;i<n;i++){const a=Math.random()*6.28,v=(big?10:5)*(.4+Math.random());
+    P.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-(big?5:3),r:Math.random()*6,vr:Math.random()*.4-.2,c:CL[i%CL.length],t:big&&i%2?SY[i%SY.length]:'',l:1})}
+  if(!run){run=1;loop()}
+}
+function loop(){
+  fc.clearRect(0,0,fx.width,fx.height);P=P.filter(p=>p.l>0);
+  P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.22;p.vx*=.99;p.r+=p.vr;p.l-=.012;
+    fc.save();fc.globalAlpha=Math.max(p.l,0);fc.translate(p.x,p.y);fc.rotate(p.r);fc.fillStyle=p.c;
+    if(p.t){fc.font='800 18px Outfit,sans-serif';fc.fillText(p.t,0,0)}else fc.fillRect(-4,-3,8,6);fc.restore()});
+  if(P.length)requestAnimationFrame(loop);else run=0;
+}
+
+/* ---------- GATE PARTICLES ---------- */
+const g=$('gate'),gc=$('gc'),gx=gc.getContext('2d');let GW,GH,M={x:-999,y:-999},ps=[];
+function gs(){GW=gc.width=innerWidth;GH=gc.height=innerHeight}gs();addEventListener('resize',gs);
+g.addEventListener('pointermove',e=>{M.x=e.clientX;M.y=e.clientY});
+for(let i=0,n=Math.min(48,innerWidth/20|0);i<n;i++)ps.push({x:Math.random()*GW,y:Math.random()*GH,vx:Math.random()-.5,vy:Math.random()-.5,s:SY[i%SY.length],c:CL[i%CL.length],r:15+Math.random()*10});
+(function L(){
+  if(!g.isConnected)return;
+  gx.clearRect(0,0,GW,GH);
+  ps.forEach((p,i)=>{
+    const dx=p.x-M.x,dy=p.y-M.y,d=Math.hypot(dx,dy);if(d<140){p.vx+=dx/d*.12;p.vy+=dy/d*.12}
+    p.vx*=.985;p.vy*=.985;p.x+=p.vx+.1;p.y+=p.vy;
+    if(p.x<-30)p.x=GW+30;if(p.x>GW+30)p.x=-30;if(p.y<-30)p.y=GH+30;if(p.y>GH+30)p.y=-30;
+    for(let j=i+1;j<ps.length;j++){const q=ps[j],h=Math.hypot(p.x-q.x,p.y-q.y);
+      if(h<120){gx.strokeStyle=p.c;gx.globalAlpha=(1-h/120)*.35;gx.beginPath();gx.moveTo(p.x,p.y);gx.lineTo(q.x,q.y);gx.stroke()}}
+    gx.globalAlpha=1;gx.shadowColor=p.c;gx.shadowBlur=18;gx.fillStyle=p.c;gx.globalAlpha=.16;
+    gx.beginPath();gx.arc(p.x,p.y,p.r,0,6.28);gx.fill();gx.globalAlpha=.9;gx.shadowBlur=0;
+    gx.font='800 '+(p.r*.85)+'px Outfit,sans-serif';gx.textAlign='center';gx.textBaseline='middle';gx.fillText(p.s,p.x,p.y+1);
+  });
+  requestAnimationFrame(L);
+})();
+
+/* ---------- PASSWORD LOGIC ---------- */
+const pw=$('gpw'),gm=$('gm'),card=$('gcard'),K=atob('QWxpMDM0');let tries=0,done=0;
+const BAD=['Galat password 😅 phir try karo','Arre yaar, ye nahi hai 🙈','Lock hila hi nahi 🔒 dobara daalo','Thoda dhyan se type karo 🔍'];
+function go(){
+  if(done)return;
+  if(pw.value===K){
+    done=1;g.classList.add('ok');gm.style.color='#6ee7b7';gm.textContent='Access mil gaya! 🎉';
+    burst(innerWidth/2,innerHeight/2,110,1);setTimeout(()=>burst(innerWidth/2,innerHeight*.4,70,1),350);
+    setTimeout(()=>g.classList.add('go'),1100);
+    setTimeout(()=>{g.remove();document.documentElement.classList.remove('lk');scrollTo(0,0);if(window.splitHeroLetters)splitHeroLetters()},2150);
+  }else{
+    tries++;card.classList.remove('bad');void card.offsetWidth;card.classList.add('bad');
+    gm.textContent=BAD[tries%BAD.length];pw.value='';if(navigator.vibrate)navigator.vibrate(120);
+  }
+}
+$('gb').onclick=go;pw.onkeydown=e=>{if(e.key==='Enter')go()};
+$('ge').onclick=()=>{pw.type=pw.type==='password'?'text':'password'};
+setTimeout(()=>pw.focus({preventScroll:true}),900);
+
+/* ---------- MAIN-SITE UPGRADES (after page is ready) ---------- */
+function init(){
+  const q=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)];
+  const hero=q('.hero');
+  if(hero){
+    [['⚗️',10,8,0],['🧪',18,82,-2],['💊',62,6,-4],['🧬',70,88,-1],['⚛️',40,3,-3],['🔬',46,92,-5]].forEach(f=>
+      hero.insertAdjacentHTML('afterbegin','<span class="fl" style="top:'+f[1]+'%;left:'+f[2]+'%;animation-delay:'+f[3]+'s">'+f[0]+'</span>'));
+    const ch=q('.hero-chips');
+    if(ch)ch.insertAdjacentHTML('beforebegin','<div class="typer"><span id="tw"></span><i></i></div>');
+  }
+  const cc=q('.credit-chip');if(cc)cc.insertAdjacentHTML('beforebegin','<button id="nt" type="button" title="Night mode">🌙</button>');
+
+  /* typewriter */
+  const W=['Molarity nikalo ⚡','Alligation solve karo 🔀','Dose calculate karo 💊','Buffer pH set karo 🧫','Half-life dekho ⏳','118 elements explore karo 🧬'],tw=$('tw');
+  let wi=0,ci=0,dl=0;
+  (function t(){
+    if(!tw)return;const A=Array.from(W[wi]);ci+=dl?-1:1;tw.textContent=A.slice(0,ci).join('');
+    let d=dl?35:80;
+    if(!dl&&ci>=A.length){dl=1;d=1400}else if(dl&&ci<=0){dl=0;wi=(wi+1)%W.length;d=350}
+    setTimeout(t,d);
+  })();
+
+  /* night mode + back to top */
+  const nt=$('nt');if(nt)nt.onclick=e=>{document.documentElement.classList.toggle('nt');burst(e.clientX,e.clientY,30)};
+  $('up').onclick=()=>scrollTo({top:0,behavior:'smooth'});
+
+  /* scroll: progress bar, back-to-top, orb parallax */
+  const pg=$('pg'),up=$('up'),orb=q('.orb-bg');
+  addEventListener('scroll',()=>{
+    const m=document.documentElement.scrollHeight-innerHeight;
+    pg.style.width=(m>0?scrollY/m*100:0)+'%';up.classList.toggle('on',scrollY>600);
+    if(orb)orb.style.transform='translateY('+(scrollY*-.12)+'px)';
+  },{passive:true});
+
+  /* scroll-spy nav */
+  const ls=qa('.nav-links a');
+  const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)ls.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-40% 0px -50% 0px'});
+  ['table','tools','reference'].forEach(i=>{const s=$(i);if(s)so.observe(s)});
+
+  /* periodic table wave entrance */
+  const pt=q('.pt-wrap');
+  if(pt)new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){
+    qa('.el').forEach(el=>{el.style.setProperty('--i',(parseInt(el.style.gridColumn)||0)+(parseInt(el.style.gridRow)||0)*2);el.classList.add('wv')});o.disconnect()}},{threshold:.15}).observe(pt);
+
+  /* staggered card reveal */
+  const r2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+    const sib=[...e.target.parentElement.children].indexOf(e.target);
+    e.target.style.setProperty('--d',(sib%6)*.08+'s');e.target.classList.add('in2');r2.unobserve(e.target)}}),{threshold:.1});
+  qa('.card,.ref-item').forEach(el=>{el.classList.add('rv2');r2.observe(el)});
+
+  /* result numbers pop */
+  const mo=new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{
+    if(n.nodeType!==1)return;const b=n.matches('.big')?n:n.querySelector('.big');
+    if(b){b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}})));
+  qa('.out').forEach(o=>mo.observe(o,{childList:true}));
+
+  /* 3D tilt, magnetic buttons, cursor glow (mouse devices only) */
+  if(matchMedia('(hover:hover)').matches){
+    let tl=null,mg=null,cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;const cg=$('cg');
+    addEventListener('pointermove',e=>{
+      tx=e.clientX;ty=e.clientY;
+      const t=e.target.closest?e.target.closest('.card,.chip'):null;
+      if(tl&&tl!==t)tl.style.transform='';tl=t;
+      if(t){const r=t.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;
+        t.style.transform='perspective(900px) rotateX('+(-py*5)+'deg) rotateY('+(px*6)+'deg) translateY(-4px)'}
+      const b=e.target.closest?e.target.closest('.btn-clay'):null;
+      if(mg&&mg!==b)mg.style.transform='';mg=b;
+      if(b){const r=b.getBoundingClientRect();
+        b.style.transform='translate('+((e.clientX-r.left-r.width/2)*.25)+'px,'+((e.clientY-r.top-r.height/2)*.35-3)+'px)'}
+    });
+    (function f(){cx+=(tx-cx)*.12;cy+=(ty-cy)*.12;cg.style.transform='translate('+cx+'px,'+cy+'px)';requestAnimationFrame(f)})();
+  }else{const c=$('cg');if(c)c.remove()}
+
+  /* ripple + calculate sparkle */
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.btn-clay,.btn,.qb,.tab');
+    if(b){const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,p=document.createElement('span');
+      p.className='rp';p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(e.clientX-r.left-s/2)+'px;top:'+(e.clientY-r.top-s/2)+'px';
+      b.appendChild(p);setTimeout(()=>p.remove(),650)}
+    if(e.target.closest('.btn-clay.primary')&&e.target.closest('.card'))burst(e.clientX,e.clientY,26);
+  });
+
+  /* Bohr electron-shell model inside element popup */
+  const CORE={He:[2],Ne:[2,8],Ar:[2,8,8],Kr:[2,8,18,8],Xe:[2,8,18,18,8],Rn:[2,8,18,32,18,8]};
+  function shells(cfg){
+    const m=cfg.match(/^\[(\w+)\]/);const s=m&&CORE[m[1]]?CORE[m[1]].slice():[];
+    ((m?cfg.slice(m[0].length):cfg).match(/\d[spdf]\d+/g)||[]).forEach(t=>{const n=+t[0]-1;s[n]=(s[n]||0)+ +t.slice(2)});
+    return s.map(v=>v||0);
+  }
+  if(window.openElement&&window.BY_SYM&&window.CAT_COLORS){
+    const _o=window.openElement;
+    window.openElement=function(sym){
+      _o(sym);const e=BY_SYM[sym],mb=document.querySelector('#modal .modal-body');if(!e||!mb)return;
+      const sh=shells(e.config),col=CAT_COLORS[e.cat];let svg='<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="15" fill="'+col+'"/><text x="100" y="105" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">'+e.sym+'</text>';
+      sh.forEach((c,i)=>{const r=26+i*(72/Math.max(sh.length,4)),n=Math.min(c,32);
+        svg+='<circle class="ring" cx="100" cy="100" r="'+r+'"/><g class="o" style="animation-duration:'+(5+i*3)+'s;animation-direction:'+(i%2?'reverse':'normal')+'">';
+        for(let k=0;k<n;k++){const a=k/n*6.2832;svg+='<circle cx="'+(100+r*Math.cos(a)).toFixed(1)+'" cy="'+(100+r*Math.sin(a)).toFixed(1)+'" r="2.6" fill="'+col+'" stroke="#fff" stroke-width=".8"/>'}
+        svg+='</g>'});
+      mb.insertAdjacentHTML('afterbegin','<div class="bohr">'+svg+'</svg><div class="bl">ELECTRON SHELLS: '+sh.join(' · ')+'</div></div>');
+    };
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+const $=i=>document.getElementById(i),q=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)];
+const CL=['#6ee7b7','#7dd3fc','#c4b5fd','#fdba74','#f9a8d4','#fde047'];
+const css=`
+.fx{opacity:0;filter:blur(8px);transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.9,.2,1.15),filter .9s,box-shadow .4s;will-change:transform,opacity}
+.fx.t-left{transform:translateX(-150px) rotateY(28deg) scale(.88)}
+.fx.t-right{transform:translateX(150px) rotateY(-28deg) scale(.88)}
+.fx.t-zoom{transform:scale(.35) rotate(-10deg)}
+.fx.t-flip{transform:perspective(800px) rotateX(-75deg) translateY(40px)}
+.fx.t-drop{transform:translateY(-70px) scale(.7)}
+.fx.t-rise{transform:translateY(70px)}
+.fx.on{opacity:1;filter:none;transform:none;transition-delay:var(--d,0s)}
+.fx.on.done{transition:transform .25s,box-shadow .4s,opacity .3s;transition-delay:0s}
+.sec-head .wd{display:inline-block;perspective:600px}
+.sec-head .ch{display:inline-block;opacity:0;transform:translateY(70%) rotateX(-100deg) scale(.6);filter:blur(6px);transition:opacity .6s,transform .8s cubic-bezier(.2,.9,.2,1.2),filter .6s;transition-delay:calc(var(--k)*28ms)}
+.sec-head.on .ch{opacity:1;transform:none;filter:none}
+.sec-head:not(.on) .ch{transition-delay:0s}
+.sec-head .bar{transform-origin:top;transform:scaleY(0);transition:transform .8s cubic-bezier(.2,.9,.2,1.2)}
+.sec-head.on .bar{transform:scaleY(1)}
+.sec-head p{margin-left:20px}
+.card,.ref-item{position:relative;overflow:hidden}
+.card::after,.ref-item::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(52,211,153,.2),rgba(56,189,248,.08) 45%,transparent 70%)}
+.card:hover::after,.ref-item:hover::after{opacity:1}
+.panel{animation:flipIn .7s cubic-bezier(.2,.9,.2,1.1)}
+@keyframes flipIn{from{opacity:0;transform:perspective(900px) rotateY(-20deg) translateX(-50px) scale(.95);filter:blur(6px)}}
+.sp{position:fixed;width:7px;height:7px;margin:-3px;border-radius:50%;pointer-events:none;z-index:9998;animation:sp .9s ease-out forwards}
+@keyframes sp{to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+.pt-wrap{transform-origin:50% 0}
+@media(prefers-reduced-motion:reduce){.fx,.sec-head .ch{opacity:1!important;transform:none!important;filter:none!important}}
+`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+
+function cnt(el,on){
+  const t=+el.dataset.count,s=el.dataset.suffix||'',p=el.dataset.prefix||'';cancelAnimationFrame(el._r);
+  if(!on){el.textContent=t?p+0+s:p;return}
+  if(!t){el.textContent=p;return}
+  const t0=performance.now();
+  (function f(n){const k=Math.min((n-t0)/1600,1);el.textContent=p+Math.round((1-Math.pow(1-k,3))*t)+s;if(k<1)el._r=requestAnimationFrame(f)})(t0);
+}
+
+function init(){
+  window.animateCounter=function(){};           /* stop the one-shot counter */
+  qa('section.reveal').forEach(s=>s.classList.remove('reveal'));
+
+  /* ---- bidirectional reveal: animates IN when it enters, back OUT when it leaves ---- */
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    const t=e.target;
+    if(e.isIntersecting){
+      t.classList.add('on');
+      setTimeout(()=>{if(t.classList.contains('on'))t.classList.add('done')},1400);
+    }else t.classList.remove('on','done');
+    t.querySelectorAll('[data-count]').forEach(c=>cnt(c,e.isIntersecting));
+  }),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+
+  [['.stat-card','zoom'],['.card',0],['.ref-item','flip'],['.chip','drop'],['.pt-controls','rise'],['.tabs','rise'],['.sec-head p','rise'],['footer .made','rise'],['footer .tiny','rise']]
+  .forEach(([s,v])=>qa(s).forEach(el=>{
+    el.classList.remove('reveal','rv2','in2','in');
+    const i=[...el.parentElement.children].indexOf(el);
+    el.classList.add('fx','t-'+(v||(i%2?'right':'left')));
+    el.style.setProperty('--d',(i%6)*.09+'s');io.observe(el);
+  }));
+
+  /* section headings: letter-by-letter 3D flip + growing bar */
+  qa('.sec-head').forEach(sh=>{
+    const h=sh.querySelector('h2'),tn=h&&[...h.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());
+    if(tn){const w=document.createElement('span');w.className='wd';
+      [...tn.textContent.trim()].forEach((c,i)=>{const s=document.createElement('span');s.className='ch';s.style.setProperty('--k',i);s.textContent=c===' '?'\u00A0':c;w.appendChild(s)});
+      tn.replaceWith(w)}
+    io.observe(sh);
+  });
+
+  /* periodic table wave: replays every time you scroll to it */
+  const pt=q('.pt-wrap'),els=qa('.el:not(.ph)');
+  if(pt)new IntersectionObserver(es=>{
+    if(es[0].isIntersecting){els.forEach(el=>{el.classList.remove('wv');void el.offsetWidth;
+      el.style.setProperty('--i',(parseInt(el.style.gridColumn)||0)+(parseInt(el.style.gridRow)||0)*2);el.classList.add('wv')})}
+    else els.forEach(el=>el.classList.remove('wv'));
+  },{threshold:.1}).observe(pt);
+
+  /* ---- scroll-scrubbed motion (moves forward AND backward with your finger) ---- */
+  const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const h1=q('.hero h1'),heroEls=['.hero-badge','.hero>p','.typer','.hero-chips','.hero-cta'].map(q).filter(Boolean);
+  const mq=q('.marquee-wrap'),orb=q('.orb-bg'),heads=qa('.sec-head h2');
+  let ly=scrollY,vel=0;
+  const cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+  (function tick(){
+    const y=scrollY;vel+=((y-ly)-vel)*.15;ly=y;
+    if(!calm){
+      const p=cl(y/innerHeight,0,1);
+      if(h1)h1.style.cssText+=';transform:translateY('+p*90+'px) scale('+(1-p*.2)+');opacity:'+(1-p*1.15)+';filter:blur('+p*12+'px)';
+      heroEls.forEach((el,i)=>{el.style.transform='translateY('+p*(40+i*30)+'px)';el.style.opacity=cl(1-p*(1.2+i*.15),0,1)});
+      if(mq)mq.style.transform='skewX('+cl(-vel*.3,-14,14)+'deg)';
+      if(orb)orb.style.filter='hue-rotate('+y*.1+'deg)';
+      heads.forEach(h=>{const r=h.getBoundingClientRect();h.style.transform='translateX('+cl(((r.top+r.height/2)/innerHeight-.5)*-90,-60,60)+'px)'});
+      if(pt){const r=pt.getBoundingClientRect();
+        if(r.top<innerHeight&&r.bottom>0){const k=cl((innerHeight-r.top)/(innerHeight*.85),0,1);
+          pt.style.transform='perspective(1200px) rotateX('+(1-k)*20+'deg) scale('+(.93+.07*k)+')'}}
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  /* ---- mouse-only extras ---- */
+  if(matchMedia('(hover:hover)').matches&&!calm){
+    let mx=0,my=0,raf=0,lastSp=0;
+    const fish=()=>{raf=0;els.forEach(el=>{const r=el.getBoundingClientRect(),
+      f=Math.max(0,1-Math.hypot(mx-(r.left+r.width/2),my-(r.top+r.height/2))/120);
+      el.style.transform=f?'scale('+(1+f*.55)+') translateY('+(-f*6)+'px)':'';el.style.zIndex=f>.5?20:''})};
+    const tb=$('ptable');
+    if(tb){tb.addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;if(!raf)raf=requestAnimationFrame(fish)});
+      tb.addEventListener('pointerleave',()=>els.forEach(el=>{el.style.transform='';el.style.zIndex=''}))}
+    addEventListener('pointermove',e=>{
+      const c=e.target.closest&&e.target.closest('.card,.ref-item');
+      if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')}
+      const n=performance.now();
+      if(n-lastSp>45){lastSp=n;const s=document.createElement('span');s.className='sp';
+        s.style.cssText='left:'+e.clientX+'px;top:'+e.clientY+'px;background:'+CL[Math.random()*6|0]+';--x:'+(Math.random()*40-20)+'px;--y:'+(Math.random()*50+10)+'px';
+        document.body.appendChild(s);setTimeout(()=>s.remove(),900)}
+    });
+  }
+}
+const go=()=>setTimeout(init,60);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+})();
+</script>
+<script>
+(function(){
+'use strict';
+
+/* ===== B) SOUND (Web Audio) ===== */
+let SOUND_ON = localStorage.getItem('pharma_sound') !== 'off';
+let audioCtx = null;
+function getAudio(){
+  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+  if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+  return audioCtx;
+}
+function beep(f,d,t='sine',v=0.12){
+  if(!SOUND_ON)return;const c=getAudio();if(!c)return;
+  try{const o=c.createOscillator(),g=c.createGain();o.type=t;o.frequency.value=f;
+    g.gain.setValueAtTime(v,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+d);
+    o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d);}catch(e){}
+}
+function clickSound(){beep(1200,.03,'sine',.05);setTimeout(()=>beep(900,.04,'sine',.04),20);}
+function successSound(){beep(880,.08,'sine',.1);setTimeout(()=>beep(1320,.1,'sine',.1),70);setTimeout(()=>beep(1760,.12,'sine',.08),140);}
+function errorSound(){beep(220,.15,'sawtooth',.1);}
+
+/* ===== A) HISTORY ===== */
+const HIST_KEY='pharma_hist_v1', HIST_MAX=40;
+function getHistory(){try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]');}catch(e){return[];}}
+function saveHistory(e){const h=getHistory();h.unshift({...e,time:Date.now()});
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(h.slice(0,HIST_MAX)));}catch(e){}renderHistory();}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderHistory(){
+  const list=document.getElementById('histList');if(!list)return;
+  const h=getHistory();
+  if(!h.length){list.innerHTML='<div class="hist-empty">Abhi tak koi calculation nahi 🌱<br>Pehla calculate karo — history yahan aayegi!</div>';return;}
+  list.innerHTML=h.map(e=>{
+    const d=new Date(e.time);
+    const ts=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="hist-item"><div class="hist-title">${e.icon||'📐'} ${escapeHtml(e.title)}</div><div class="hist-result">${escapeHtml(e.result)}</div><div class="hist-time">${ts}</div></div>`;
+  }).join('');
+}
+function clearHistory(){
+  if(!confirm('Saari history delete karni hai?'))return;
+  localStorage.removeItem(HIST_KEY);renderHistory();errorSound();showToast('🗑️ History cleared','ok');
+}
+
+// Auto-capture on Calculate
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.btn-clay.primary');if(!btn)return;
+  let out=btn.nextElementSibling;
+  while(out&&!out.classList.contains('out'))out=out.nextElementSibling;
+  if(!out)out=btn.parentElement.querySelector('.out');
+  if(!out)return;
+  const card=btn.closest('.card');
+  const h3=card?.querySelector('h3');
+  const title=h3?h3.textContent.replace(/[^\w\s&+\-/.²³]/g,'').trim():'Calculation';
+  const icon=h3?.querySelector('.ic')?.textContent?.trim()||'📐';
+  setTimeout(()=>{
+    if(out.querySelector('.err')){errorSound();return;}
+    const big=out.querySelector('.big');if(!big)return;
+    const result=big.textContent.trim().replace(/\s+/g,' ');
+    if(!result||result.length<2)return;
+    saveHistory({title,icon,result});successSound();
+  },120);
+},true);
+
+// Global click sound
+document.addEventListener('click',e=>{
+  if(e.target.closest('.btn-clay,.btn,.tab,.qb,.chip,button:not(#soundTog):not(#histToggle)'))clickSound();
+},true);
+
+/* ===== C) PWA (graceful) ===== */
+let deferredPrompt=null;
+if('serviceWorker' in navigator && location.protocol==='https:'){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('installBtn')?.classList.add('show');
+});
+document.getElementById('installBtn')?.addEventListener('click',async()=>{
+  if(!deferredPrompt){showToast('⚠️ Install sirf HTTPS pe kaam karta hai','err');return;}
+  deferredPrompt.prompt();
+  const{outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted'){showToast('✅ App installed!','ok');successSound();}
+  deferredPrompt=null;
+  document.getElementById('installBtn')?.classList.remove('show');
+});
+
+/* ===== TOAST ===== */
+let toastTimer=null;
+function showToast(msg,kind='ok'){
+  const t=document.getElementById('toast');if(!t)return;
+  t.textContent=msg;t.className='toast show '+kind;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ===== NAV BUTTONS INJECT ===== */
+function updateSoundBtn(){
+  const b=document.getElementById('soundTog');
+  if(b){b.textContent=SOUND_ON?'🔊':'🔇';b.title=SOUND_ON?'Sound: ON':'Sound: OFF';}
+}
+function injectButtons(){
+  const chip=document.querySelector('.credit-chip');
+  if(!chip||document.getElementById('soundTog'))return;
+  const sBtn=document.createElement('button');
+  sBtn.id='soundTog';sBtn.type='button';
+  sBtn.onclick=()=>{SOUND_ON=!SOUND_ON;localStorage.setItem('pharma_sound',SOUND_ON?'on':'off');
+    updateSoundBtn();if(SOUND_ON)successSound();
+    showToast(SOUND_ON?'🔊 Sound ON':'🔇 Sound OFF','ok');};
+  chip.parentNode.insertBefore(sBtn,chip);
+  const hBtn=document.createElement('button');
+  hBtn.id='histToggle';hBtn.type='button';hBtn.title='Calculation History';hBtn.textContent='📜';
+  hBtn.onclick=()=>{const p=document.getElementById('histPanel');
+    p.classList.toggle('on');hBtn.classList.toggle('on',p.classList.contains('on'));
+    clickSound();if(p.classList.contains('on'))renderHistory();};
+  chip.parentNode.insertBefore(hBtn,chip);
+  updateSoundBtn();
+}
+/* ===== AUTO UPDATE SYSTEM ===== */
+function setupAutoUpdate() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      // Har 30 minute mein naya update check karega
+      setInterval(() => { reg.update(); }, 30 * 60 * 1000); 
+      
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Naya update mil gaya!
+            showToast('🎉 Naya update aaya hai! Kripya app refresh karein.', 'ok');
+            // Auto reload (Optional)
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
+        });
+      });
+    });
+
+    // Agar controller change ho (update apply ho jaye)
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+  }
+}
+/* ===== INIT ===== */
+function init(){
+  injectButtons();
+  setupAutoUpdate();
+  renderHistory();
+  document.getElementById('histClear')?.addEventListener('click',clearHistory);
+  document.addEventListener('click',e=>{
+    const p=document.getElementById('histPanel'),t=document.getElementById('histToggle');
+    if(!p.classList.contains('on'))return;
+    if(p.contains(e.target)||t?.contains(e.target))return;
+    p.classList.remove('on');t?.classList.remove('on');
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.target.matches('input,textarea,select'))return;
+    if(e.key==='h'||e.key==='H')document.getElementById('histToggle')?.click();
+    if(e.key==='m'||e.key==='M')document.getElementById('soundTog')?.click();
+  });
+  console.log('%c📜 History + 🔊 Sound + 📲 PWA ready','color:#10b981;font-size:13px;font-weight:800');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+
+})();
+</script>
+</html>
