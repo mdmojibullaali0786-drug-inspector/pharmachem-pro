@@ -2126,34 +2126,279 @@ function calcMolarMass(){
   }
 }
 /* ===== PHASE 2: STEP-BY-STEP LOGIC ===== */
-function showSteps(type) {
+window.showSteps = function(type) {
   const out = document.getElementById('steps-' + type);
   if (!out) return;
-  
   if (out.style.display === 'block') { out.style.display = 'none'; return; }
   
   let html = '';
   
-  if (type === 'crcl') {
-    const age = parseFloat(document.getElementById('crAge').value);
-    const wt = parseFloat(document.getElementById('crWt').value);
-    const scr = parseFloat(document.getElementById('crScr').value);
-    const gender = document.getElementById('crGender').value;
-    let result = ((140 - age) * wt) / (72 * scr);
-    if (gender === 'female') result *= 0.85;
-    
-    html = `<b>Formula (Cockcroft-Gault):</b>\nCrCl = [(140 - Age) × Weight] / (72 × Serum Creatinine)\n\n`;
-    html += `<b>Step 1:</b> Input values daalein:\nAge = ${age} years, Weight = ${wt} kg, Scr = ${scr} mg/dL\n\n`;
-    html += `<b>Step 2:</b> Formula mein values rakhein:\nCrCl = [(140 - ${age}) × ${wt}] / (72 × ${scr})\n\n`;
-    if (gender === 'female') {
-      html += `<b>Step 3:</b> Female correction factor (× 0.85) lagayein:\nCrCl = ${(((140 - age) * wt) / (72 * scr)).toFixed(2)} × 0.85\n\n`;
+  if (type === 'mnn') {
+    let mass = parseFloat(document.getElementById('mMass').value) || 0;
+    let mw = parseFloat(document.getElementById('mMW').value) || 0;
+    let vol = parseFloat(document.getElementById('mVol').value) || 0;
+    let solv = parseFloat(document.getElementById('mSolv').value) || 0;
+    let nf = parseFloat(document.getElementById('mN').value) || 1;
+    let M = (mass / mw) / (vol / 1000);
+    let m = (mass / mw) / solv;
+    let N = M * nf;
+    html = `<b>Formulas:</b>\nMolarity = (Mass ÷ MW) ÷ Vol(L)\nMolality = (Mass ÷ MW) ÷ Solvent(kg)\nNormality = Molarity × n-factor\n\n`;
+    html += `<b>Step 1:</b> Moles = ${mass} ÷ ${mw} = ${(mass/mw).toFixed(4)} mol\n\n`;
+    html += `<b>Step 2 (Molarity):</b> ${(mass/mw).toFixed(4)} ÷ ${(vol/1000).toFixed(3)}L = ${M.toFixed(4)} M\n\n`;
+    html += `<b>Step 3 (Molality):</b> ${(mass/mw).toFixed(4)} ÷ ${solv}kg = ${m.toFixed(4)} mol/kg\n\n`;
+    html += `<b>Step 4 (Normality):</b> ${M.toFixed(4)} × ${nf} = ${N.toFixed(4)} N`;
+  }
+  else if (type === 'mnn_conv') {
+    let mode = document.getElementById('mnMode').value;
+    let val = parseFloat(document.getElementById('mnVal').value) || 0;
+    let nf = parseFloat(document.getElementById('mnNF').value) || 1;
+    if(mode === 'm2n') {
+      html = `<b>Formula:</b> Normality = Molarity × n-factor\n\n`;
+      html += `<b>Step 1:</b> N = ${val} × ${nf}\n\n`;
+      html += `<b>Answer:</b> ${(val*nf).toFixed(4)} N`;
+    } else {
+      html = `<b>Formula:</b> Molarity = Normality ÷ n-factor\n\n`;
+      html += `<b>Step 1:</b> M = ${val} ÷ ${nf}\n\n`;
+      html += `<b>Answer:</b> ${(val/nf).toFixed(4)} M`;
     }
-    html += `<b>Final Answer:</b> ${result.toFixed(2)} mL/min`;
+  }
+  else if (type === 'strength') {
+    let g = parseFloat(document.getElementById('sG').value) || 0;
+    let v = parseFloat(document.getElementById('sV').value) || 1;
+    let pct = (g / v) * 100;
+    html = `<b>Formula:</b> % w/v = (Mass in g ÷ Volume in mL) × 100\n\n`;
+    html += `<b>Step 1:</b> Values: Mass = ${g}g, Vol = ${v}mL\n\n`;
+    html += `<b>Step 2:</b> (${g} ÷ ${v}) × 100\n\n`;
+    html += `<b>Answer:</b> ${pct.toFixed(4)} % w/v`;
+  }
+  else if (type === 'pka') {
+    let mode = document.getElementById('pkMode').value;
+    let val = parseFloat(document.getElementById('pkVal').value) || 0;
+    if(mode === 'k') {
+      html = `<b>Formula:</b> pKa = -log(Ka)\n\n`;
+      html += `<b>Step 1:</b> pKa = -log(${val})\n\n`;
+      html += `<b>Answer:</b> ${(-Math.log10(val)).toFixed(4)}`;
+    } else {
+      html = `<b>Formula:</b> Ka = 10^(-pKa)\n\n`;
+      html += `<b>Step 1:</b> Ka = 10^(-${val})\n\n`;
+      html += `<b>Answer:</b> ${Math.pow(10, -val).toExponential(3)}`;
+    }
+  }
+  else if (type === 'buffer') {
+    let pka = parseFloat(document.getElementById('brPka').value) || 0;
+    let ph = parseFloat(document.getElementById('brPh').value) || 0;
+    let ratio = Math.pow(10, ph - pka);
+    html = `<b>Formula (Henderson-Hasselbalch):</b> pH = pKa + log(Ratio)\n`;
+    html += `log(Ratio) = pH - pKa\nRatio = 10^(pH - pKa)\n\n`;
+    html += `<b>Step 1:</b> pH - pKa = ${ph} - ${pka} = ${(ph-pka).toFixed(3)}\n\n`;
+    html += `<b>Step 2:</b> 10^(${ph-pka}) = ${ratio.toFixed(4)}\n\n`;
+    html += `<b>Answer:</b> Ratio = 1 : ${ratio.toFixed(4)} (Salt : Acid)`;
+  }
+  else if (type === 'unit') {
+    let cat = document.getElementById('ucCat').value;
+    let from = document.getElementById('ucFrom').value;
+    let to = document.getElementById('ucTo').value;
+    let v = parseFloat(document.getElementById('ucVal').value) || 0;
+    html = `<b>Conversion:</b> ${cat.toUpperCase()} Unit Conversion\n\n`;
+    html += `<b>Step 1:</b> Input value = ${v} ${from}\n\n`;
+    html += `<b>Step 2:</b> Conversion factor apply karein ${from} to ${to}.\n\n`;
+    html += `<b>Answer:</b> Upar result dekhein.`;
+  }
+  else if (type === 'mgml') {
+    let mode = document.getElementById('mmMode').value;
+    let val = parseFloat(document.getElementById('mmVal').value) || 0;
+    let mw = parseFloat(document.getElementById('mmMW').value) || 1;
+    if(mode === 'm2g') {
+      html = `<b>Formula:</b> mg/mL = Molarity × Molecular Weight\n\n`;
+      html += `<b>Step 1:</b> ${val} × ${mw}\n\n`;
+      html += `<b>Answer:</b> ${(val*mw).toFixed(4)} mg/mL`;
+    } else {
+      html = `<b>Formula:</b> Molarity = (mg/mL) ÷ Molecular Weight\n\n`;
+      html += `<b>Step 1:</b> ${val} ÷ ${mw}\n\n`;
+      html += `<b>Answer:</b> ${(val/mw).toFixed(6)} mol/L`;
+    }
+  }
+  else if (type === 'plasma') {
+    let c0 = parseFloat(document.getElementById('pcC0').value) || 0;
+    let k = parseFloat(document.getElementById('pcK').value) || 0;
+    let t = parseFloat(document.getElementById('pcT').value) || 0;
+    let C = c0 * Math.exp(-k * t);
+    html = `<b>Formula:</b> C = C₀ × e^(-k × t)\n\n`;
+    html += `<b>Step 1:</b> Values: C₀ = ${c0}, k = ${k}, t = ${t}\n\n`;
+    html += `<b>Step 2:</b> Calculate exponent: -${k} × ${t} = ${-(k*t).toFixed(3)}\n\n`;
+    html += `<b>Step 3:</b> e^(${-(k*t).toFixed(3)}) = ${Math.exp(-k*t).toFixed(4)}\n\n`;
+    html += `<b>Answer:</b> ${c0} × ${Math.exp(-k*t).toFixed(4)} = ${C.toFixed(4)} mg/L`;
+  }
+  else if (type === 'steady') {
+    let dose = parseFloat(document.getElementById('ssDose').value) || 0;
+    let f = parseFloat(document.getElementById('ssF').value) || 1;
+    let cl = parseFloat(document.getElementById('ssCL').value) || 1;
+    let tau = parseFloat(document.getElementById('ssTau').value) || 1;
+    let css = (dose * f) / (cl * tau);
+    html = `<b>Formula:</b> Css = (Dose × F) ÷ (CL × τ)\n\n`;
+    html += `<b>Step 1:</b> Numerator (Dose × F): ${dose} × ${f} = ${(dose*f).toFixed(2)}\n\n`;
+    html += `<b>Step 2:</b> Denominator (CL × τ): ${cl} × ${tau} = ${(cl*tau).toFixed(2)}\n\n`;
+    html += `<b>Step 3:</b> Divide: ${(dose*f).toFixed(2)} ÷ ${(cl*tau).toFixed(2)}\n\n`;
+    html += `<b>Answer:</b> ${css.toFixed(4)} mg/L`;
+  }
+  else if (type === 'molarity') {
+    let mass = parseFloat(document.getElementById('cMassM').value) || 0;
+    let mw = parseFloat(document.getElementById('cMWM').value) || 0;
+    let vol = parseFloat(document.getElementById('cVolM').value) || 0;
+    let M = (mass / mw) / (vol / 1000);
+    html = `<b>Formula:</b> Molarity (M) = (Mass ÷ Molecular Weight) ÷ Volume(L)\n\n`;
+    html += `<b>Step 1:</b> Moles = ${mass} ÷ ${mw} = ${(mass/mw).toFixed(4)} mol\n\n`;
+    html += `<b>Step 2:</b> Vol(L) = ${vol}mL ÷ 1000 = ${(vol/1000).toFixed(3)} L\n\n`;
+    html += `<b>Answer:</b> ${(mass/mw).toFixed(4)} ÷ ${(vol/1000).toFixed(3)} = ${M.toFixed(4)} M`;
+  }
+  else if (type === 'molality') {
+    let mass = parseFloat(document.getElementById('cMassL').value) || 0;
+    let mw = parseFloat(document.getElementById('cMWL').value) || 0;
+    let solv = parseFloat(document.getElementById('cSolvL').value) || 0;
+    let m = (mass / mw) / solv;
+    html = `<b>Formula:</b> Molality = Moles ÷ Solvent(kg)\n\n`;
+    html += `<b>Step 1:</b> Moles = ${mass} ÷ ${mw} = ${(mass/mw).toFixed(4)} mol\n\n`;
+    html += `<b>Answer:</b> ${(mass/mw).toFixed(4)} ÷ ${solv} = ${m.toFixed(4)} m`;
+  }
+  else if (type === 'normality') {
+    let mass = parseFloat(document.getElementById('cMassN').value) || 0;
+    let mw = parseFloat(document.getElementById('cMWN').value) || 0;
+    let vol = parseFloat(document.getElementById('cVolN').value) || 0;
+    let nf = parseFloat(document.getElementById('cNF').value) || 1;
+    let N = (mass * nf) / (mw * (vol/1000));
+    html = `<b>Formula:</b> N = (Mass × n) ÷ (MW × Vol(L))\n\n`;
+    html += `<b>Step 1:</b> (${mass} × ${nf}) = ${mass*nf}\n\n`;
+    html += `<b>Step 2:</b> (${mw} × ${(vol/1000).toFixed(3)}) = ${(mw*(vol/1000)).toFixed(3)}\n\n`;
+    html += `<b>Answer:</b> ${(mass*nf)} ÷ ${(mw*(vol/1000)).toFixed(3)} = ${N.toFixed(4)} N`;
+  }
+  else if (type === 'bsa') {
+    let h = parseFloat(document.getElementById('bsaH').value) || 0;
+    let w = parseFloat(document.getElementById('bsaW').value) || 0;
+    let bsa = Math.sqrt((h * w) / 3600);
+    html = `<b>Formula (Mosteller):</b> BSA = √[(Height × Weight) ÷ 3600]\n\n`;
+    html += `<b>Step 1:</b> ${h} × ${w} = ${h*w}\n\n`;
+    html += `<b>Step 2:</b> ${h*w} ÷ 3600 = ${(h*w/3600).toFixed(4)}\n\n`;
+    html += `<b>Answer:</b> √${(h*w/3600).toFixed(4)} = ${bsa.toFixed(4)} m²`;
+  }
+  else if (type === 'paediatric') {
+    let adult = parseFloat(document.getElementById('pdAdult').value) || 0;
+    let age = parseFloat(document.getElementById('pdAge').value) || 0;
+    let young = adult * (age / (age + 12));
+    html = `<b>Formula (Young's Rule):</b> Child Dose = Adult × [Age ÷ (Age+12)]\n\n`;
+    html += `<b>Step 1:</b> Age fraction = ${age} ÷ (${age}+12) = ${(age/(age+12)).toFixed(4)}\n\n`;
+    html += `<b>Answer:</b> ${adult} × ${(age/(age+12)).toFixed(4)} = ${young.toFixed(2)} mg`;
+  }
+  else if (type === 'tablet') {
+    let dose = parseFloat(document.getElementById('tDose').value) || 0;
+    let tab = parseFloat(document.getElementById('tTab').value) || 1;
+    let freq = parseFloat(document.getElementById('tFreq').value) || 1;
+    let tabs = dose / tab;
+    html = `<b>Formula:</b> Total Tablets = Daily Dose ÷ Tablet Strength\n\n`;
+    html += `<b>Step 1:</b> ${dose} ÷ ${tab} = ${tabs.toFixed(2)} tablets\n\n`;
+    html += `<b>Answer:</b> Per dose (${freq}x) = ${(tabs/freq).toFixed(2)} tablet`;
+  }
+  else if (type === 'iv') {
+    let v = parseFloat(document.getElementById('ivV').value) || 0;
+    let t = parseFloat(document.getElementById('ivT').value) || 1;
+    let df = parseFloat(document.getElementById('ivD').value) || 20;
+    let mlhr = v / t;
+    let dpm = (mlhr / 60) * df;
+    html = `<b>Formula:</b> Drops/min = (Vol ÷ Time_mins) × Drop Factor\n\n`;
+    html += `<b>Step 1:</b> Time in mins = ${t} × 60 = ${t*60}\n\n`;
+    html += `<b>Step 2:</b> (${v} ÷ ${t*60}) × ${df}\n\n`;
+    html += `<b>Answer:</b> ${dpm.toFixed(1)} drops/min`;
+  }
+  else if (type === 'crcl') {
+    let age = parseFloat(document.getElementById('crAge').value) || 0;
+    let wt = parseFloat(document.getElementById('crWt').value) || 0;
+    let scr = parseFloat(document.getElementById('crScr').value) || 1;
+    let gender = document.getElementById('crGender').value;
+    let crcl = ((140 - age) * wt) / (72 * scr);
+    if (gender === 'female') crcl *= 0.85;
+    html = `<b>Formula (Cockcroft-Gault):</b> [(140 - Age) × Wt] ÷ (72 × Scr)\n\n`;
+    html += `<b>Step 1:</b> Numerator = (140 - ${age}) × ${wt} = ${(140-age)*wt}\n\n`;
+    html += `<b>Step 2:</b> Denominator = 72 × ${scr} = ${72*scr}\n\n`;
+    html += `<b>Step 3:</b> Division = ${(140-age)*wt} ÷ ${72*scr} = ${(((140-age)*wt)/(72*scr)).toFixed(2)}\n\n`;
+    if(gender === 'female') html += `<b>Step 4 (Female):</b> ${(((140-age)*wt)/(72*scr)).toFixed(2)} × 0.85\n\n`;
+    html += `<b>Answer:</b> ${crcl.toFixed(2)} mL/min`;
+  }
+  else if (type === 'ibw') {
+    let ht = parseFloat(document.getElementById('ibwHt').value) || 0;
+    let gender = document.getElementById('ibwGender').value;
+    let inches = ht / 2.54;
+    let ibw = gender === 'male' ? 50 + 2.3 * (inches - 60) : 45.5 + 2.3 * (inches - 60);
+    html = `<b>Formula (Devine):</b> Base + 2.3 × (Inches - 60)\n\n`;
+    html += `<b>Step 1:</b> Inches = ${ht} ÷ 2.54 = ${inches.toFixed(1)}\n\n`;
+    html += `<b>Step 2:</b> ${gender === 'male' ? '50' : '45.5'} + 2.3 × (${inches.toFixed(1)} - 60)\n\n`;
+    html += `<b>Answer:</b> ${ibw.toFixed(1)} kg`;
+  }
+  else if (type === 'dilution') {
+    html = `<b>Formula:</b> C₁ × V₁ = C₂ × V₂\n\n`;
+    html += `<b>Step 1:</b> Missing value ko algebraically solve karein.\n\n`;
+    html += `<b>Answer:</b> Upar result dekhein.`;
+  }
+  else if (type === 'alligation') {
+    let hi = parseFloat(document.getElementById('aHi').value) || 0;
+    let lo = parseFloat(document.getElementById('aLo').value) || 0;
+    let de = parseFloat(document.getElementById('aDe').value) || 0;
+    let partsHi = de - lo, partsLo = hi - de;
+    html = `<b>Formula:</b> Parts = (Desired - Lower) : (Higher - Desired)\n\n`;
+    html += `<b>Step 1:</b> Higher Part = ${de} - ${lo} = ${partsHi}\n\n`;
+    html += `<b>Step 2:</b> Lower Part = ${hi} - ${de} = ${partsLo}\n\n`;
+    html += `<b>Answer:</b> ${partsHi} : ${partsLo}`;
+  }
+  else if (type === 'ph') {
+    let mode = document.getElementById('phMode').value;
+    let val = parseFloat(document.getElementById('phVal').value) || 0;
+    if(mode === 'h') {
+      html = `<b>Formula:</b> pH = -log[H⁺]\n\n`;
+      html += `<b>Answer:</b> -log(${val}) = ${(-Math.log10(val)).toFixed(3)}`;
+    } else {
+      html = `<b>Formula:</b> [H⁺] = 10^(-pH)\n\n`;
+      html += `<b>Answer:</b> 10^(-${val}) = ${Math.pow(10,-val).toExponential(3)}`;
+    }
+  }
+  else if (type === 'hh') {
+    let pka = parseFloat(document.getElementById('hhPka').value) || 0;
+    let A = parseFloat(document.getElementById('hhA').value) || 0;
+    let HA = parseFloat(document.getElementById('hhHA').value) || 1;
+    let pH = pka + Math.log10(A/HA);
+    html = `<b>Formula:</b> pH = pKa + log([Salt] / [Acid])\n\n`;
+    html += `<b>Step 1:</b> Ratio = ${A} ÷ ${HA} = ${(A/HA).toFixed(3)}\n\n`;
+    html += `<b>Step 2:</b> log(${(A/HA).toFixed(3)}) = ${Math.log10(A/HA).toFixed(3)}\n\n`;
+    html += `<b>Answer:</b> ${pka} + ${Math.log10(A/HA).toFixed(3)} = ${pH.toFixed(3)}`;
+  }
+  else if (type === 'halflife') {
+    let mode = document.getElementById('kMode').value;
+    let k = parseFloat(document.getElementById('kK').value) || 0;
+    html = `<b>Formula:</b> t½ = 0.693 ÷ k\n\n`;
+    if(mode === 'kt'){
+      html += `<b>Answer:</b> 0.693 ÷ ${k} = ${(0.693/k).toFixed(4)} hours`;
+    } else {
+      let th = parseFloat(document.getElementById('kHalf').value) || 1;
+      html += `<b>Formula Rearranged:</b> k = 0.693 ÷ t½\n\n`;
+      html += `<b>Answer:</b> 0.693 ÷ ${th} = ${(0.693/th).toFixed(5)} hr⁻¹`;
+    }
+  }
+  else if (type === 'vd') {
+    let dose = parseFloat(document.getElementById('vdDose').value) || 0;
+    let c0 = parseFloat(document.getElementById('vdC').value) || 1;
+    let k = parseFloat(document.getElementById('vdK').value) || 0;
+    let vd = dose / c0;
+    html = `<b>Formula:</b> Vd = Dose ÷ C₀\n\n`;
+    html += `<b>Answer:</b> Vd = ${dose} ÷ ${c0} = ${vd.toFixed(3)} L\n\n`;
+    if(k > 0) html += `<b>Clearance:</b> CL = k × Vd = ${k} × ${vd.toFixed(3)} = ${(k*vd).toFixed(3)} L/hr`;
+  }
+  else if (type === 'mmw') {
+    html = `<b>Formula:</b> Molar Mass calculation based on element atomic weights.\n\n`;
+    html += `<b>Step 1:</b> Har element ka atomic mass multiply by atom count.\n\n`;
+    html += `<b>Step 2:</b> Sabko add karein.\n\n`;
+    html += `<b>Answer:</b> Upar breakdown table mein poora calculation diya gaya hai.`;
   }
   
   out.innerHTML = html;
   out.style.display = 'block';
-}
+};
 /* CLINICAL CALCULATORS */
 function calcCrCl(){
   const age = parseFloat(document.getElementById('crAge').value);
@@ -3031,6 +3276,40 @@ function optimizeForMobile() {
 /* ===== INIT ===== */
 function init(){
   injectButtons();
+    // AUTO-INJECT "SHOW STEPS" BUTTONS
+    const calcButtons = [
+    { id: 'mOut', type: 'mnn' }, 
+    { id: 'mnOut', type: 'mnn_conv' },
+    { id: 'cOutM', type: 'molarity' }, 
+    { id: 'cOutL', type: 'molality' }, 
+    { id: 'cOutN', type: 'normality' }, 
+    { id: 'sOut', type: 'strength' },
+    { id: 'dOut', type: 'dilution' }, 
+    { id: 'aOut', type: 'alligation' }, 
+    { id: 'bsaOut', type: 'bsa' },
+    { id: 'pdOut', type: 'paediatric' }, 
+    { id: 'tOut', type: 'tablet' }, 
+    { id: 'ivOut', type: 'iv' }, 
+    { id: 'crOut', type: 'crcl' }, 
+    { id: 'ibwOut', type: 'ibw' }, 
+    { id: 'phOut', type: 'ph' }, 
+    { id: 'hhOut', type: 'hh' }, 
+    { id: 'pkOut', type: 'pka' },
+    { id: 'brOut', type: 'buffer' },
+    { id: 'kOut', type: 'halflife' }, 
+    { id: 'vdOut', type: 'vd' },
+    { id: 'pcOut', type: 'plasma' },
+    { id: 'ssOut', type: 'steady' },
+    { id: 'ucOut', type: 'unit' },
+    { id: 'mmOut', type: 'mgml' }
+  ];
+  
+  calcButtons.forEach(item => {
+    const outDiv = document.getElementById(item.id);
+    if (outDiv && !document.getElementById('steps-' + item.type)) {
+      outDiv.insertAdjacentHTML('afterend', `<button class="steps-btn" onclick="showSteps('${item.type}')">🔍 Show Steps</button><div class="steps-content" id="steps-${item.type}"></div>`);
+    }
+  });
   optimizeForMobile();
   setupAutoUpdate();
   renderHistory();
