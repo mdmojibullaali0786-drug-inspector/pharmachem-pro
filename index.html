@@ -1065,6 +1065,38 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
         <div class="out" id="ivOut"></div>
       </div>
 
+            <div class="card">
+        <h3><span class="ic">🫘</span> Creatinine Clearance (CrCl)</h3>
+        <div class="sub">Cockcroft-Gault formula — kidney function aur dose adjust karne ke liye.</div>
+        <div class="row2">
+          <div class="field"><label>Age (years)</label><input id="crAge" type="number" value="30" step="any"></div>
+          <div class="field"><label>Weight (kg)</label><input id="crWt" type="number" value="70" step="any"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Serum Creatinine (mg/dL)</label><input id="crScr" type="number" value="1.0" step="any"></div>
+          <div class="field"><label>Gender</label>
+            <select id="crGender"><option value="male">Male</option><option value="female">Female</option></select>
+          </div>
+        </div>
+        <button class="btn-clay primary" onclick="calcCrCl()">Calculate CrCl</button>
+        <div class="out" id="crOut"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">⚖️</span> Ideal Body Weight (IBW)</h3>
+        <div class="sub">Devine formula — nutritional assessment aur drug dosing ke liye.</div>
+        <div class="row2">
+          <div class="field"><label>Height (cm)</label><input id="ibwHt" type="number" value="170" step="any"></div>
+          <div class="field"><label>Actual Weight (kg)</label><input id="ibwActual" type="number" value="80" step="any"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Gender</label>
+            <select id="ibwGender"><option value="male">Male</option><option value="female">Female</option></select>
+          </div>
+        </div>
+        <button class="btn-clay primary" onclick="calcIBW()">Calculate IBW</button>
+        <div class="out" id="ibwOut"></div>
+      </div>
     </div>
   </div>
 
@@ -2045,7 +2077,55 @@ function calcMolarMass(){
       <div class="line"><span>g/L</span><b>${fmt(val,4)} g/L</b></div>`;
   }
 }
+/* CLINICAL CALCULATORS */
+function calcCrCl(){
+  const age = parseFloat(document.getElementById('crAge').value);
+  const wt = parseFloat(document.getElementById('crWt').value);
+  const scr = parseFloat(document.getElementById('crScr').value);
+  const gender = document.getElementById('crGender').value;
+  const out = document.getElementById('crOut');
+  if(!age || !wt || !scr){ out.innerHTML='<div class="err">Saari values bharo.</div>'; return; }
+  
+  let crcl = ((140 - age) * wt) / (72 * scr);
+  if(gender === 'female') crcl *= 0.85;
+  
+  let stage = '';
+  if(crcl >= 90) stage = 'Normal (Stage 1)';
+  else if(crcl >= 60) stage = 'Mild ↓ (Stage 2)';
+  else if(crcl >= 30) stage = 'Moderate ↓ (Stage 3)';
+  else if(crcl >= 15) stage = 'Severe ↓ (Stage 4)';
+  else stage = 'Kidney Failure (Stage 5)';
 
+  out.innerHTML = `
+    <div class="big">${fmt(crcl, 2)} <small>mL/min</small></div>
+    <div class="line"><span>Formula</span><b>Cockcroft-Gault</b></div>
+    <div class="line"><span>Kidney Stage</span><b>${stage}</b></div>
+    <div class="line"><span>Dose Adjustment?</span><b>${crcl < 60 ? 'Yes, consult doctor' : 'Normal dose'}</b></div>
+  `;
+}
+
+function calcIBW(){
+  const ht = parseFloat(document.getElementById('ibwHt').value);
+  const actual = parseFloat(document.getElementById('ibwActual').value);
+  const gender = document.getElementById('ibwGender').value;
+  const out = document.getElementById('ibwOut');
+  if(!ht || !actual){ out.innerHTML='<div class="err">Height aur weight bharo.</div>'; return; }
+  
+  const inches = ht / 2.54;
+  let ibw = 0;
+  if(gender === 'male') ibw = 50 + 2.3 * (inches - 60);
+  else ibw = 45.5 + 2.3 * (inches - 60);
+  
+  const abw = ibw + 0.4 * (actual - ibw);
+  
+  out.innerHTML = `
+    <div class="big">${fmt(ibw, 1)} <small>kg (IBW)</small></div>
+    <div class="line"><span>Height in inches</span><b>${fmt(inches, 1)} in</b></div>
+    <div class="line"><span>Actual Weight</span><b>${fmt(actual, 1)} kg</b></div>
+    <div class="line"><span>Adjusted Body Wt (ABW)</span><b>${fmt(abw, 1)} kg</b></div>
+    <div class="line"><span>Note</span><b>ABW use for obese patients</b></div>
+  `;
+}
 /* KINETICS */
 function calcHalf(){
   const mode=document.getElementById('kMode').value;
@@ -2727,8 +2807,20 @@ function renderHistory(){
   list.innerHTML=h.map(e=>{
     const d=new Date(e.time);
     const ts=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-    return `<div class="hist-item"><div class="hist-title">${e.icon||'📐'} ${escapeHtml(e.title)}</div><div class="hist-result">${escapeHtml(e.result)}</div><div class="hist-time">${ts}</div></div>`;
+    return `<div class="hist-item" style="position:relative">
+      <div class="hist-title">${e.icon||'📐'} ${escapeHtml(e.title)}</div>
+      <div class="hist-result">${escapeHtml(e.result)}</div>
+      <div class="hist-time">${ts}</div>
+      <button onclick="deleteHistoryItem(${e.time})" style="position:absolute;top:12px;right:12px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;width:24px;height:24px;border-radius:50%;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.8rem;" title="Delete">✕</button>
+    </div>`;
   }).join('');
+}
+function deleteHistoryItem(time){
+  let h = getHistory();
+  h = h.filter(item => item.time !== time);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+  renderHistory();
+  clickSound(); 
 }
 function clearHistory(){
   if(!confirm('Saari history delete karni hai?'))return;
