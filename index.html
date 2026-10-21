@@ -2803,7 +2803,14 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 function renderHistory(){
   const list=document.getElementById('histList');if(!list)return;
   const h=getHistory();
-  if(!h.length){list.innerHTML='<div class="hist-empty">Abhi tak koi calculation nahi 🌱<br>Pehla calculate karo — history yahan aayegi!</div>';return;}
+  const panel = document.getElementById('histPanel');
+  const isPanelOpen = panel && panel.classList.contains('on');
+  
+  if(!h.length){
+    list.innerHTML='<div class="hist-empty">Abhi tak koi calculation nahi 🌱<br>Pehla calculate karo — history yahan aayegi!</div>';
+    if(isPanelOpen) panel.classList.add('on');
+    return;
+  }
   list.innerHTML=h.map(e=>{
     const d=new Date(e.time);
     const ts=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -2811,17 +2818,12 @@ function renderHistory(){
       <div class="hist-title">${e.icon||'📐'} ${escapeHtml(e.title)}</div>
       <div class="hist-result">${escapeHtml(e.result)}</div>
       <div class="hist-time">${ts}</div>
-      <button onclick="deleteHistoryItem(${e.time})" style="position:absolute;top:12px;right:12px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;width:24px;height:24px;border-radius:50%;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.8rem;" title="Delete">✕</button>
+      <button class="del-btn" data-time="${e.time}" style="position:absolute;top:12px;right:12px;background:#fee2e2;border:none;color:#dc2626;cursor:pointer;width:24px;height:24px;border-radius:50%;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.8rem;" title="Delete">✕</button>
     </div>`;
   }).join('');
+  if(isPanelOpen) panel.classList.add('on');
 }
-function deleteHistoryItem(time){
-  let h = getHistory();
-  h = h.filter(item => item.time !== time);
-  localStorage.setItem(HIST_KEY, JSON.stringify(h));
-  renderHistory();
-  clickSound(); 
-}
+
 function clearHistory(){
   if(!confirm('Saari history delete karni hai?'))return;
   localStorage.removeItem(HIST_KEY);renderHistory();errorSound();showToast('🗑️ History cleared','ok');
@@ -2956,11 +2958,66 @@ function init(){
   setupAutoUpdate();
   renderHistory();
   document.getElementById('histClear')?.addEventListener('click',clearHistory);
-  document.addEventListener('click',e=>{
-    const p=document.getElementById('histPanel'),t=document.getElementById('histToggle');
-    if(!p.classList.contains('on'))return;
-    if(p.contains(e.target)||t?.contains(e.target))return;
-    p.classList.remove('on');t?.classList.remove('on');
+    // --- FIXED DELETE LOGIC ---
+  document.getElementById('histList')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.del-btn');
+    if (btn) {
+      e.preventDefault();
+      e.stopPropagation(); // Sabse important line: Panel ko band hone se rokega
+      
+      const time = parseInt(btn.getAttribute('data-time'));
+      
+      // 1. Data delete karo
+      let h = getHistory();
+      h = h.filter(item => item.time !== time);
+      localStorage.setItem(HIST_KEY, JSON.stringify(h));
+      
+      // 2. Screen se us item ko smoothly hatao (bina puri list refresh kiye)
+      const item = btn.closest('.hist-item');
+      if (item) {
+        item.style.transition = 'all 0.3s ease';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(30px)';
+        setTimeout(() => {
+          item.remove();
+          // Agar sari history khatam ho jaye toh "No history" wala message dikhao
+          if (document.getElementById('histList').children.length === 0) {
+            renderHistory(); 
+          }
+        }, 300);
+      }
+      clickSound();
+    }
+  });
+    // History delete button ka naya logic
+  document.getElementById('histList')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.del-btn');
+    if (btn) {
+     // Panel ko band hone se rokega
+      const time = parseInt(btn.getAttribute('data-time'));
+      deleteHistoryItem(time);
+    }
+  });
+   // Panel ko band karne ka naya fixed logic
+  document.addEventListener('click', e => {
+    const p = document.getElementById('histPanel');
+    const t = document.getElementById('histToggle');
+    
+    // Agar panel khula nahi hai, toh kuch mat karo
+    if (!p.classList.contains('on')) return;
+    
+    // Agar click panel ke andar hua hai (jaise delete button ya kisi text pe), toh panel band mat karo
+    if (p.contains(e.target)) return; 
+    
+    // Agar click history wale toggle button (📜) pe hua hai, toh mat karo (wo khud handle karega)
+    if (t && t.contains(e.target)) return;
+    
+    // Agar click delete button pe hua hai, toh mat karo
+    if (e.target.closest('.del-btn')) return;
+
+    // Agar upar ki koi condition match nahi hui, matlab click bahar hua hai -> Panel band karo
+    p.classList.remove('on');
+    if(t) t.classList.remove('on');
   });
   document.addEventListener('keydown',e=>{
     if(e.target.matches('input,textarea,select'))return;
