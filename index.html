@@ -189,7 +189,12 @@ nav.topnav.scrolled{box-shadow:var(--clay-hover)}
 .hero h1 .accent{
   background: none; /* Parent se gradient hata diya */
 }
-.hero h1 .accent .char {
+.hero h1 .accent {
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  color: inherit !important;
+}
+.hero h1 .accent .char-inner {
   background: linear-gradient(120deg, #10b981, #38bdf8, #a855f7);
   background-size: 220% auto;
   -webkit-background-clip: text !important;
@@ -2238,13 +2243,20 @@ function splitHeroLetters(){
     [...text].forEach(ch => {
       const span = document.createElement('span');
       span.className = 'char';
-      span.textContent = ch === ' ' ? '\u00A0' : ch;
       span.style.opacity = '0';
       span.style.filter = 'blur(10px)';
       span.style.transform = 'translateY(50px) scale(.9)';
+      
+      // Naya Inner Span gradient ke liye (Jo bug ko fix karega)
+      const inner = document.createElement('span');
+      inner.className = 'char-inner';
+      inner.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.appendChild(inner);
+      
       line.appendChild(span);
     });
   });
+  
   const chars = h1.querySelectorAll('.char');
   chars.forEach((ch, i) => {
     setTimeout(() => {
