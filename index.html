@@ -755,6 +755,35 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
     transform: none !important;
   }
 }
+/* --- PHASE 2: Global Search, Mic, Steps Modal --- */
+#globalSearchBtn { background:transparent; border:none; cursor:pointer; font-size:1.2rem; padding:5px 10px; transition:0.3s; }
+#globalSearchBtn:hover { transform:scale(1.1); }
+.search-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(5px); z-index:10000; display:none; align-items:flex-start; justify-content:center; padding-top:10vh; }
+.search-overlay.on { display:flex; }
+.search-modal { width:90%; max-width:600px; background:linear-gradient(145deg,#f5f8fc,#e6ecf4); border-radius:20px; box-shadow:0 20px 50px rgba(0,0,0,0.3); overflow:hidden; display:flex; flex-direction:column; }
+.search-header { display:flex; align-items:center; padding:15px 20px; border-bottom:2px solid rgba(174,190,205,0.3); background:#fff; gap:10px; }
+.search-header input { flex:1; border:none; outline:none; font-size:1.1rem; background:transparent; font-family:inherit; color:var(--txt); font-weight:600; }
+.search-results { max-height:400px; overflow-y:auto; padding:10px; }
+.search-item { padding:12px 15px; border-radius:10px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:10px; color:var(--txt); transition:0.2s; }
+.search-item:hover { background:rgba(52,211,153,0.15); color:var(--mint-txt); }
+.mic-btn { background:#fee2e2; border:none; border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; transition:0.3s; flex:none; }
+.mic-btn.recording { animation:pulseMic 1s infinite; background:#fca5a5; }
+@keyframes pulseMic { 0% { box-shadow:0 0 0 0 rgba(239,68,68,0.7); } 70% { box-shadow:0 0 0 10px rgba(239,68,68,0); } 100% { box-shadow:0 0 0 0 rgba(239,68,68,0); } }
+.steps-btn { background:linear-gradient(135deg,#e0f2fe,#bae6fd); border:1px solid #7dd3fc; color:#0284c7; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.75rem; font-weight:800; margin-top:10px; display:inline-flex; align-items:center; gap:5px; transition:0.2s; }
+.steps-btn:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(56,189,248,0.3); }
+.steps-content { background:#f8fafc; border-radius:12px; padding:15px; margin-top:10px; border-left:4px solid #38bdf8; font-family:'Space Grotesk', monospace; font-size:0.9rem; line-height:1.6; color:#334155; white-space:pre-wrap; display:none; animation:fadeIn 0.3s ease; }
+/* --- PHASE 2 FIX: Smart Mic Button --- */
+.input-with-mic { position: relative; width: 100%; }
+.input-with-mic input { padding-right: 45px !important; }
+.mic-btn-inside {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  border: 1px solid #7dd3fc; border-radius: 50%;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.mic-btn-inside:hover { transform: translateY(-50%) scale(1.1); }
+.mic-btn-inside.recording { animation: pulseMic 1s infinite; background: #fca5a5; border-color: #ef4444; }
 </style>
 </head>
 <body>
@@ -773,6 +802,7 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
     <div class="logo-orb"></div>
     <span class="logo-text">PharmaChem<span>&nbsp;Pro</span></span>
   </div>
+  <button id="globalSearchBtn" title="Search (Ctrl+K)">🔍</button>
   <div class="nav-links">
     <a href="#table">Periodic</a>
     <a href="#tools">Calculators</a>
@@ -872,7 +902,10 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
       <div class="sub">Formula likho — brackets, hydrates aur subscripts sab support hai. Jaise: C6H12O6, Ca(OH)2, CuSO4.5H2O, (NH4)2SO4</div>
       <div class="field">
         <label>Chemical Formula</label>
-        <input id="mwInput" type="text" placeholder="e.g. C9H8O4" value="C9H8O4" autocomplete="off" spellcheck="false">
+        <div class="input-with-mic">
+  <input id="mwInput" type="text" placeholder="e.g. C9H8O4" value="C9H8O4" autocomplete="off" spellcheck="false">
+  <button class="mic-btn-inside" id="mwMicBtn" type="button" title="Bol kar formula bolein">🎤</button>
+</div>
       </div>
       <div class="quick" id="mwQuick"></div>
       <div class="out" id="mwOut"></div>
@@ -1080,6 +1113,7 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
         </div>
         <button class="btn-clay primary" onclick="calcCrCl()">Calculate CrCl</button>
         <div class="out" id="crOut"></div>
+        <button class="steps-btn" onclick="showSteps('crcl')">🔍 Show Steps</button><div class="steps-content" id="steps-crcl"></div>
       </div>
 
       <div class="card">
@@ -1299,6 +1333,20 @@ footer .tiny{color:var(--muted);font-size:.8rem;margin-top:12px;line-height:1.7;
     Data standard atomic weights par based hai. Clinical decisions ke liye hamesha reference book follow karo.
   </div>
 </footer>
+<!-- Global Search Modal -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-modal">
+    <div class="search-header">
+      <span>🔍</span>
+      <input type="text" id="globalSearchInput" placeholder="Search calculators, elements, formulas...">
+      <button class="mic-btn" id="globalMicBtn" title="Voice Search">🎤</button>
+      <button style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#64748b;" onclick="document.getElementById('searchOverlay').classList.remove('on')">✕</button>
+    </div>
+    <div class="search-results" id="searchResults">
+      <!-- Results yahan aayenge -->
+    </div>
+  </div>
+</div>
 <!-- ===== A+B+C: History + Install + Toast ===== -->
 <div class="hist-panel" id="histPanel">
   <div class="hist-head">
@@ -2076,6 +2124,35 @@ function calcMolarMass(){
       <div class="line"><span>% w/v</span><b>${fmt(val/10,4)} %</b></div>
       <div class="line"><span>g/L</span><b>${fmt(val,4)} g/L</b></div>`;
   }
+}
+/* ===== PHASE 2: STEP-BY-STEP LOGIC ===== */
+function showSteps(type) {
+  const out = document.getElementById('steps-' + type);
+  if (!out) return;
+  
+  if (out.style.display === 'block') { out.style.display = 'none'; return; }
+  
+  let html = '';
+  
+  if (type === 'crcl') {
+    const age = parseFloat(document.getElementById('crAge').value);
+    const wt = parseFloat(document.getElementById('crWt').value);
+    const scr = parseFloat(document.getElementById('crScr').value);
+    const gender = document.getElementById('crGender').value;
+    let result = ((140 - age) * wt) / (72 * scr);
+    if (gender === 'female') result *= 0.85;
+    
+    html = `<b>Formula (Cockcroft-Gault):</b>\nCrCl = [(140 - Age) × Weight] / (72 × Serum Creatinine)\n\n`;
+    html += `<b>Step 1:</b> Input values daalein:\nAge = ${age} years, Weight = ${wt} kg, Scr = ${scr} mg/dL\n\n`;
+    html += `<b>Step 2:</b> Formula mein values rakhein:\nCrCl = [(140 - ${age}) × ${wt}] / (72 × ${scr})\n\n`;
+    if (gender === 'female') {
+      html += `<b>Step 3:</b> Female correction factor (× 0.85) lagayein:\nCrCl = ${(((140 - age) * wt) / (72 * scr)).toFixed(2)} × 0.85\n\n`;
+    }
+    html += `<b>Final Answer:</b> ${result.toFixed(2)} mL/min`;
+  }
+  
+  out.innerHTML = html;
+  out.style.display = 'block';
 }
 /* CLINICAL CALCULATORS */
 function calcCrCl(){
@@ -2957,22 +3034,18 @@ function init(){
   optimizeForMobile();
   setupAutoUpdate();
   renderHistory();
+  
+  // --- FIXED DELETE LOGIC ---
   document.getElementById('histClear')?.addEventListener('click',clearHistory);
-    // --- FIXED DELETE LOGIC ---
   document.getElementById('histList')?.addEventListener('click', (e) => {
     const btn = e.target.closest('.del-btn');
     if (btn) {
       e.preventDefault();
-      e.stopPropagation(); // Sabse important line: Panel ko band hone se rokega
-      
+      e.stopPropagation(); 
       const time = parseInt(btn.getAttribute('data-time'));
-      
-      // 1. Data delete karo
       let h = getHistory();
       h = h.filter(item => item.time !== time);
       localStorage.setItem(HIST_KEY, JSON.stringify(h));
-      
-      // 2. Screen se us item ko smoothly hatao (bina puri list refresh kiye)
       const item = btn.closest('.hist-item');
       if (item) {
         item.style.transition = 'all 0.3s ease';
@@ -2980,52 +3053,212 @@ function init(){
         item.style.transform = 'translateX(30px)';
         setTimeout(() => {
           item.remove();
-          // Agar sari history khatam ho jaye toh "No history" wala message dikhao
-          if (document.getElementById('histList').children.length === 0) {
-            renderHistory(); 
-          }
+          if (document.getElementById('histList').children.length === 0) renderHistory(); 
         }, 300);
       }
       clickSound();
     }
   });
-    // History delete button ka naya logic
-  document.getElementById('histList')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.del-btn');
-    if (btn) {
-     // Panel ko band hone se rokega
-      const time = parseInt(btn.getAttribute('data-time'));
-      deleteHistoryItem(time);
-    }
-  });
-   // Panel ko band karne ka naya fixed logic
-  document.addEventListener('click', e => {
-    const p = document.getElementById('histPanel');
-    const t = document.getElementById('histToggle');
-    
-    // Agar panel khula nahi hai, toh kuch mat karo
-    if (!p.classList.contains('on')) return;
-    
-    // Agar click panel ke andar hua hai (jaise delete button ya kisi text pe), toh panel band mat karo
-    if (p.contains(e.target)) return; 
-    
-    // Agar click history wale toggle button (📜) pe hua hai, toh mat karo (wo khud handle karega)
-    if (t && t.contains(e.target)) return;
-    
-    // Agar click delete button pe hua hai, toh mat karo
-    if (e.target.closest('.del-btn')) return;
 
-    // Agar upar ki koi condition match nahi hui, matlab click bahar hua hai -> Panel band karo
-    p.classList.remove('on');
-    if(t) t.classList.remove('on');
+  // Panel close logic
+  document.addEventListener('click', e => {
+    const p = document.getElementById('histPanel'), t = document.getElementById('histToggle');
+    if (!p.classList.contains('on')) return;
+    if (p.contains(e.target) || t?.contains(e.target) || e.target.closest('.del-btn')) return;
+    p.classList.remove('on'); if(t) t.classList.remove('on');
   });
+
+  // Keyboard Shortcuts
   document.addEventListener('keydown',e=>{
     if(e.target.matches('input,textarea,select'))return;
-    if(e.key==='h'||e.key==='H')document.getElementById('histToggle')?.click();
-    if(e.key==='m'||e.key==='M')document.getElementById('soundTog')?.click();
+    if(e.key==='h'||e.key==='H') document.getElementById('histToggle')?.click();
+    if(e.key==='m'||e.key==='M') document.getElementById('soundTog')?.click();
   });
-  console.log('%c📜 History + 🔊 Sound + 📲 PWA ready','color:#10b981;font-size:13px;font-weight:800');
+
+  // === PHASE 2: GLOBAL SEARCH ===
+  const searchBtn = document.getElementById('globalSearchBtn');
+  const searchOverlay = document.getElementById('searchOverlay');
+  const searchInput = document.getElementById('globalSearchInput');
+  const searchResults = document.getElementById('searchResults');
+
+  const appData = [
+    { name: "Molarity Calculator", id: "conc", icon: "🎯" },
+    { name: "Molality Calculator", id: "conc", icon: "🎯" },
+    { name: "Normality Calculator", id: "conc", icon: "🎯" },
+    { name: "Molecular Weight", id: "mw", icon: "⚖️" },
+    { name: "Dilution (C1V1)", id: "sol", icon: "💧" },
+    { name: "Alligation Method", id: "sol", icon: "🔀" },
+    { name: "Dose & BSA", id: "dose", icon: "💊" },
+    { name: "Creatinine Clearance", id: "dose", icon: "🫘" },
+    { name: "Ideal Body Weight", id: "dose", icon: "⚖️" },
+    { name: "pH & Buffer", id: "ph", icon: "🧫" },
+    { name: "Henderson-Hasselbalch", id: "ph", icon: "⚗️" },
+    { name: "Unit Converter", id: "unit", icon: "🔄" },
+    { name: "Kinetics & PK", id: "kin", icon: "📈" },
+    { name: "Half-Life", id: "kin", icon: "⏳" }
+  ];
+  if(window.ELEMENTS) {
+    window.ELEMENTS.forEach(el => appData.push({ name: el.name + " (" + el.sym + ")", id: "table", icon: "⚛️" }));
+  }
+
+  function openSearch() {
+    if(!searchOverlay) return;
+    searchOverlay.classList.add('on');
+    searchInput.value = '';
+    renderSearch('');
+    setTimeout(() => searchInput.focus(), 100);
+  }
+  
+  function renderSearch(query) {
+    const q = query.toLowerCase();
+    const filtered = appData.filter(item => item.name.toLowerCase().includes(q)).slice(0, 10);
+    searchResults.innerHTML = filtered.map(item => 
+      `<div class="search-item" onclick="document.getElementById('searchOverlay').classList.remove('on'); switchTab('${item.id}'); document.getElementById('tools').scrollIntoView();">
+        <span>${item.icon}</span> ${item.name}
+      </div>`
+    ).join('');
+    if(filtered.length === 0) searchResults.innerHTML = '<div style="padding:15px;color:#64748b;">Kuch nahi mila.</div>';
+  }
+
+  searchBtn?.addEventListener('click', openSearch);
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape' && searchOverlay) searchOverlay.classList.remove('on');
+  });
+  searchInput?.addEventListener('input', (e) => renderSearch(e.target.value));
+
+  // === MIC SETUP ===
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (SpeechRecognition) {
+    // 1. Global Search Mic
+    const globalMic = new SpeechRecognition();
+    globalMic.lang = 'en-IN';
+    globalMic.onresult = (event) => { 
+      searchInput.value = event.results[0][0].transcript; 
+      renderSearch(searchInput.value); 
+    };
+    globalMic.onend = () => document.getElementById('globalMicBtn')?.classList.remove('recording');
+    document.getElementById('globalMicBtn')?.addEventListener('click', (e) => { 
+      e.target.classList.add('recording'); globalMic.start(); 
+    });
+
+    // 2. MW Calculator Mic (Advanced AI Logic)
+    function smartVoiceToFormula(spoken) {
+      let text = spoken.toLowerCase().replace(/[\.\?\!,]/g, '').trim();
+      
+      const numWords = {"one":"1","two":"2","three":"3","four":"4","five":"5","six":"6","seven":"7","eight":"8","nine":"9","ten":"10","zero":"0"};
+      for (let w in numWords) text = text.replace(new RegExp("\\b" + w + "\\b", "g"), numWords[w]);
+
+      const pharmaDrugs = {
+        "paracetamol": "c8h9no2", "acetaminophen": "c8h9no2", "ibuprofen": "c13h18o2", "aspirin": "c9h8o4", 
+        "caffeine": "c8h10n4o2", "metformin": "c4h11n5", "morphine": "c17h19no3", "amoxicillin": "c16h19n3o5s", 
+        "diazepam": "c16h13cln2o", "salbutamol": "c13h21no3", "ranitidine": "c13h22n4o3s", "omeprazole": "c17h19n3o3s",
+        "atorvastatin": "c33h35fn2o5", "warfarin": "c19h15nao4", "furosemide": "c12h11cln2o5s", "penicillin": "c16h18n2o4s",
+        "ciprofloxacin": "c17h18fn3o3", "glucose": "c6h12o6", "dextrose": "c6h12o6", "ascorbic acid": "c6h8o6",
+        "citric acid": "c6h8o7", "lactic acid": "c3h6o3", "uric acid": "c5h4n4o3", "urea": "ch4n2o",
+        "creatinine": "c4h7n3o", "cholesterol": "c27h46o", "testosterone": "c19h28o2", "progesterone": "c21h30o2",
+        "dopamine": "c8h11no2", "adrenaline": "c9h13no3", "epinephrine": "c9h13no3",
+        "azithromycin": "c38h72n2o12", "cephalexin": "c16h17n3o4s", "doxycycline": "c22h24n2o8",
+        "metronidazole": "c6h9n3o3", "fluconazole": "c13h12f2n6o", "acyclovir": "c8h11n5o3", "oseltamivir": "c16h28n2o4",
+        "chloroquine": "c18h26cln3", "artemether": "c16h26o5", "hydroxychloroquine": "c18h26cln3o", "ivermectin": "c48h74o14",
+        "amlodipine": "c20h25cln2o5", "losartan": "c22h23cln6o", "metoprolol": "c15h25no3", "propranolol": "c16h21no2",
+        "lisinopril": "c21h31n3o5", "enalapril": "c20h28n2o5", "spironolactone": "c24h32o4s",
+        "glibenclamide": "c23h28cln3o5s", "gliclazide": "c15h21n3o3s", "sitagliptin": "c16h15f6n5o",
+        "levothyroxine": "c15h11i4no4", "methimazole": "c4h6n2s", "prednisolone": "c21h28o5", "dexamethasone": "c22h29fo5",
+        "hydrocortisone": "c21h30o5", "diclofenac": "c14h11cl2no2", "naproxen": "c14h14o3", "tramadol": "c16h25no2",
+        "codeine": "c18h21no3", "fentanyl": "c22h28n2o", "midazolam": "c18h13clfn3", "lorazepam": "c15h10cl2n2o2",
+        "sertraline": "c17h17cl2n", "fluoxetine": "c17h18f3no", "alprazolam": "c17h13cln4", "clonazepam": "c15h10cln3o3",
+        "water": "h2o", "salt": "nacl", "baking soda": "nahco3", "caustic soda": "naoh", "vinegar": "ch3cooh",
+        "hydrogen peroxide": "h2o2", "ammonia": "nh3", "methane": "ch4", "ethanol": "c2h5oh", "methanol": "ch3oh",
+        "acetone": "c3h6o", "benzene": "c6h6", "toluene": "c7h8", "glycerol": "c3h8o3", "glycerin": "c3h8o3",
+        "edta": "c10h16n2o8", "boric acid": "h3bo3", "formaldehyde": "ch2o", "phenol": "c6h5oh", "ether": "c2h5oc2h5"
+      };
+
+      if (pharmaDrugs[text]) return pharmaDrugs[text];
+
+      const spokenElements = {
+        "hydrogen": "h", "helium": "he", "lithium": "li", "beryllium": "be", "boron": "b", "carbon": "c", 
+        "nitrogen": "n", "oxygen": "o", "fluorine": "f", "neon": "ne", "sodium": "na", "magnesium": "mg", 
+        "aluminium": "al", "aluminum": "al", "silicon": "si", "phosphorus": "p", "sulfur": "s", "sulphur": "s", 
+        "chlorine": "cl", "argon": "ar", "potassium": "k", "calcium": "ca", "scandium": "sc", "titanium": "ti", 
+        "vanadium": "v", "chromium": "cr", "manganese": "mn", "iron": "fe", "cobalt": "co", "nickel": "ni", 
+        "copper": "cu", "zinc": "zn", "gallium": "ga", "germanium": "ge", "arsenic": "as", "selenium": "se", 
+        "bromine": "br", "krypton": "kr", "rubidium": "rb", "strontium": "sr", "yttrium": "y", "zirconium": "zr", 
+        "niobium": "nb", "molybdenum": "mo", "technetium": "tc", "ruthenium": "ru", "rhodium": "rh", "palladium": "pd", 
+        "silver": "ag", "cadmium": "cd", "indium": "in", "tin": "sn", "antimony": "sb", "tellurium": "te", 
+        "iodine": "i", "xenon": "xe", "cesium": "cs", "caesium": "cs", "barium": "ba", "lanthanum": "la", 
+        "cerium": "ce", "praseodymium": "pr", "neodymium": "nd", "promethium": "pm", "samarium": "sm", 
+        "europium": "eu", "gadolinium": "gd", "terbium": "tb", "dysprosium": "dy", "holmium": "ho", "erbium": "er", 
+        "thulium": "tm", "ytterbium": "yb", "lutetium": "lu", "hafnium": "hf", "tantalum": "ta", "tungsten": "w", 
+        "rhenium": "re", "osmium": "os", "iridium": "ir", "platinum": "pt", "gold": "au", "mercury": "hg", 
+        "thallium": "tl", "lead": "pb", "bismuth": "bi", "polonium": "po", "astatine": "at", "radon": "rn", 
+        "francium": "fr", "radium": "ra", "actinium": "ac", "thorium": "th", "protactinium": "pa", "uranium": "u",
+        "chloride": "cl", "sulfate": "so4", "sulphate": "so4", "nitrate": "no3", "carbonate": "co3", 
+        "phosphate": "po4", "hydroxide": "oh", "oxide": "o", "bicarbonate": "hco3", "permanganate": "mno4", 
+        "dichromate": "cr2o7", "acetate": "c2h3o2", "cyanide": "cn", "ammonium": "nh4", "nitrite": "no2", 
+        "sulfite": "so3", "sulphite": "so3", "hypochlorite": "clo", "chlorate": "clo3", "perchlorate": "clo4",
+        "hydrochloric acid": "hcl", "sulfuric acid": "h2so4", "sulphuric acid": "h2so4", "nitric acid": "hno3",
+        "phosphoric acid": "h3po4", "carbonic acid": "h2co3"
+      };
+
+      const sortedKeys = Object.keys(spokenElements).sort((a,b) => b.length - a.length);
+      for (let key of sortedKeys) {
+        text = text.replace(new RegExp(key, 'g'), spokenElements[key]);
+      }
+      
+      text = text.replace(/\s+/g, '');
+      
+      const knownElements = ["H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"];
+      
+      let finalFormula = "";
+      let i = 0;
+      while (i < text.length) {
+        if (/[a-z]/.test(text[i])) {
+          let two = text.substring(i, i + 2);
+          let twoCap = two.charAt(0).toUpperCase() + (two.length > 1 ? two.charAt(1) : "");
+          let oneCap = text[i].toUpperCase();
+          
+          if (two.length === 2 && knownElements.includes(twoCap)) {
+            finalFormula += twoCap;
+            i += 2;
+          } else if (knownElements.includes(oneCap)) {
+            finalFormula += oneCap;
+            i += 1;
+          } else {
+            finalFormula += text[i]; 
+            i++;
+          }
+        } else {
+          finalFormula += text[i]; 
+          i++;
+        }
+      }
+      
+      if(!finalFormula) finalFormula = text.charAt(0).toUpperCase() + text.slice(1);
+      return finalFormula;
+    }
+
+    const mwRec = new SpeechRecognition();
+    mwRec.lang = 'en-IN';
+    mwRec.onresult = (event) => {
+      let spoken = event.results[0][0].transcript;
+      let finalFormula = smartVoiceToFormula(spoken);
+      document.getElementById('mwInput').value = finalFormula;
+      calcMW();
+    };
+    mwRec.onend = () => document.getElementById('mwMicBtn')?.classList.remove('recording');
+    document.getElementById('mwMicBtn')?.addEventListener('click', (e) => { 
+        if(!window.isSecureContext) alert("Mic sirf HTTPS (Vercel) ya Localhost par chalta hai!");
+        e.target.classList.add('recording'); mwRec.start(); 
+    });
+  } else {
+    document.getElementById('mwMicBtn')?.addEventListener('click', () => alert("Aapka browser Voice support nahi karta."));
+  }
+
+  console.log('%c📜 History + 🔊 Sound + 📲 PWA + 🎤 Voice Ready','color:#10b981;font-size:13px;font-weight:800');
 }
+
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 
 })();
